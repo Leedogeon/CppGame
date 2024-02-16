@@ -2,6 +2,8 @@
 #include <Windows.h>
 
 #define BulletCount 10
+#define EnemyCount 10
+
 #pragma region Enum
 enum COLOR
 {
@@ -26,15 +28,14 @@ enum COLOR
 
 #pragma endregion
 
-
-#pragma region  Struct
+#pragma region Struct
 struct Info
 {
 	int x;
 	int y;
 	COLOR color;
-};
 
+};
 
 struct Bullet
 {
@@ -43,20 +44,32 @@ struct Bullet
 	const char* shape;
 };
 
+struct Enemy
+{
+	bool act;
+	int x;
+	int y;
+	COLOR color;
+	const char* shape[3];
+};
 
 struct Obj
 {
 	int x;
 	int y;
-	COLOR color;
+	COLOR color;	  //Info
 	int aniIndex;
 	const char* shape[10][3];
+
 };
 #pragma endregion
+
 
 #pragma region Game
 Obj* player = nullptr;
 Bullet* bullets[BulletCount] = {};
+Enemy* enemies[EnemyCount] = {};
+
 
 void StageInitialize();
 void StageProgress();
@@ -82,7 +95,7 @@ int main()
 		system("cls");
 		StageProgress();
 		StageRender();
-		Sleep(20);
+		Sleep(20);	   //20ms
 
 	}
 
@@ -139,8 +152,6 @@ void StageInitialize()
 	player->shape[9][1] = "*>=====[_]L)";
 	player->shape[9][2] = "      -'-`-";
 
-
-
 	for (int i = 0; i < BulletCount; i++)
 	{
 		bullets[i] = (Bullet*)malloc(sizeof(Bullet));
@@ -148,8 +159,21 @@ void StageInitialize()
 		bullets[i]->info.x = i;
 		bullets[i]->info.y = 0;
 		bullets[i]->info.color = LIGHTBLUE;
-		bullets[i]->shape = "●";
+		bullets[i]->shape = "��";
 	}
+
+	for (int i = 0; i < EnemyCount; i++)
+	{
+		enemies[i] = (Enemy*)malloc(sizeof(Enemy));
+		enemies[i]->act = true;
+		enemies[i]->x = rand() % 20 + 20;
+		enemies[i]->y = rand() % 30;
+		enemies[i]->color = (COLOR)(rand() % 14 + 1);
+		enemies[i]->shape[0] = "������";
+		enemies[i]->shape[1] = "������";
+		enemies[i]->shape[2] = "������";
+	}
+
 }
 
 void StageProgress()
@@ -179,7 +203,7 @@ void StageProgress()
 	{
 		for (int i = 0; i < BulletCount; i++)
 		{
-			if (!bullets[i]->act)
+			if (bullets[i]->act == false)
 			{
 
 				bullets[i]->info.x = player->x + 6;
@@ -192,7 +216,8 @@ void StageProgress()
 
 	for (int i = 0; i < BulletCount; i++)
 	{
-		if (bullets[i]->act)
+		//if (bullets[i]->act)
+		if (bullets[i]->act == true)
 		{
 			bullets[i]->info.x++;
 			if (bullets[i]->info.x >= 40)
@@ -203,7 +228,6 @@ void StageProgress()
 			}
 		}
 	}
-
 }
 
 int stageCount = 0;
@@ -234,6 +258,16 @@ void StageRender()
 		printf(bullets[i]->shape);
 	}
 
+	for (int i = 0; i < EnemyCount; i++)
+	{
+		for (int j = 0; j < 3; j++)
+		{
+			MovePos(enemies[i]->x, enemies[i]->y + j);
+			Paint(enemies[i]->color);
+			printf(enemies[i]->shape[j]);
+		}
+
+	}
 }
 
 void StageRelease()
@@ -253,6 +287,14 @@ void StageRelease()
 		}
 	}
 
+	for (int i = 0; i < EnemyCount; i++)
+	{
+		if (enemies[i] != nullptr)
+		{
+			free(enemies[i]);
+			enemies[i] = nullptr;
+		}
+	}
 }
 #pragma endregion
 
