@@ -1,6 +1,7 @@
 ﻿#include <stdio.h>
 #include <Windows.h>
 
+#define BulletCount 3
 #pragma region Enum
 enum COLOR
 {
@@ -27,6 +28,22 @@ enum COLOR
 
 
 #pragma region  Struct
+struct Info
+{
+	int x;
+	int y;
+	COLOR color;
+};
+
+
+struct Bullet
+{
+	bool act;
+	Info info;
+	const char* shape;
+};
+
+
 struct Obj
 {
 	int x;
@@ -37,17 +54,15 @@ struct Obj
 };
 #pragma endregion
 
-
-
 #pragma region Game
+Obj* player = nullptr;
+Bullet* bullets[BulletCount] = {};
 
 void StageInitialize();
 void StageProgress();
 void StageRender();
 void StageRelease();
 #pragma endregion
-Obj* player = nullptr;
-
 
 #pragma region WIN_API
 void MovePos(int x, int y);
@@ -124,6 +139,17 @@ void StageInitialize()
 	player->shape[9][1] = "*>=====[_]L)";
 	player->shape[9][2] = "      -'-`-";
 
+
+
+	for (int i = 0; i < BulletCount; i++)
+	{
+		bullets[i] = (Bullet*)malloc(sizeof(Bullet));
+		bullets[i]->act = false;
+		bullets[i]->info.x = i;
+		bullets[i]->info.y = 0;
+		bullets[i]->info.color = LIGHTBLUE;
+		bullets[i]->shape = "●";
+	}
 }
 
 void StageProgress()
@@ -169,10 +195,34 @@ void StageRender()
 		Paint(player->color);
 		printf(player->shape[player->aniIndex][i]);
 	}
+
+
+	for (int i = 0; i < BulletCount; i++)
+	{
+		MovePos(bullets[i]->info.x, bullets[i]->info.y);
+		Paint(bullets[i]->info.color);
+		printf(bullets[i]->shape);
+	}
+
 }
 
 void StageRelease()
 {
+	if (player != nullptr)
+	{
+		free(player);
+		player = nullptr;
+	}
+
+	for (int i = 0; i < BulletCount; i++)
+	{
+		if (bullets[i] != nullptr)
+		{
+			free(bullets[i]);
+			bullets[i] = nullptr;
+		}
+	}
+
 }
 #pragma endregion
 
