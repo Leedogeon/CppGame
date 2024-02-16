@@ -1,7 +1,7 @@
 ﻿#include <stdio.h>
 #include <Windows.h>
 
-#define BulletCount 3
+#define BulletCount 10
 #pragma region Enum
 enum COLOR
 {
@@ -174,6 +174,36 @@ void StageProgress()
 		player->y++;
 
 	}
+
+	if (GetAsyncKeyState(VK_SPACE))
+	{
+		for (int i = 0; i < BulletCount; i++)
+		{
+			if (!bullets[i]->act)
+			{
+
+				bullets[i]->info.x = player->x + 6;
+				bullets[i]->info.y = player->y + 1;
+				bullets[i]->act = true;
+				break;
+			}
+		}
+	}
+
+	for (int i = 0; i < BulletCount; i++)
+	{
+		if (bullets[i]->act)
+		{
+			bullets[i]->info.x++;
+			if (bullets[i]->info.x >= 40)
+			{
+				bullets[i]->info.x = i;
+				bullets[i]->info.y = 0;
+				bullets[i]->act = false;
+			}
+		}
+	}
+
 }
 
 int stageCount = 0;
