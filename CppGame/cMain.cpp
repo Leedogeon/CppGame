@@ -1,13 +1,6 @@
 ﻿#include <stdio.h>
 #include <Windows.h>
 
-#pragma region Define
-
-#define PoopCount 20
-
-#pragma endregion
-
-
 #pragma region Enum
 enum COLOR
 {
@@ -30,49 +23,31 @@ enum COLOR
 
 };
 
-enum SCENE_ID
-{
-	LOGO,
-	MENU,
-	STAGE,
-};
 #pragma endregion
 
-#pragma region Struct
-typedef struct Obj
+
+#pragma region  Struct
+struct Obj
 {
-	bool act;
 	int x;
 	int y;
 	COLOR color;
-	const char* shape;
-}*PObj;	  //Obj*
+	int aniIndex;
+	const char* shape[10][3];
+};
 #pragma endregion
 
 
+
 #pragma region Game
-SCENE_ID id;
-void PlayGame();
-
-void LogoInitialize();
-void LogoProgress();
-void LogoRender();
-void LogoRelease();
-
-void MenuInitialize();
-void MenuProgress();
-void MenuRender();
-void MenuRelease();
-
-
-PObj player;
-PObj poops[PoopCount];
 
 void StageInitialize();
 void StageProgress();
 void StageRender();
 void StageRelease();
 #pragma endregion
+Obj* player = nullptr;
+
 
 #pragma region WIN_API
 void MovePos(int x, int y);
@@ -84,110 +59,71 @@ void HideCursor();
 int main()
 {
 	HideCursor();
-	id = LOGO;
-	LogoInitialize();
+	StageInitialize();
 
 
 	while (true)
 	{
 		system("cls");
-		PlayGame();
-		Sleep(50);
-
-	}
-	return 0;
-}
-
-#pragma region Game
-void PlayGame()
-{
-	switch (id)
-	{
-	case LOGO:
-		LogoProgress();
-		LogoRender();
-		break;
-	case MENU:
-		MenuProgress();
-		MenuRender();
-		break;
-	case STAGE:
 		StageProgress();
 		StageRender();
-		break;
-	default:
-		break;
+		Sleep(20);
+
 	}
-}
 
-#pragma region Logo
-void LogoInitialize()
-{
-}
+	StageRelease();
 
-void LogoProgress()
-{
-	if (GetAsyncKeyState(VK_RETURN))
-	{
-		LogoRelease();
-		id = MENU;
-		MenuInitialize();
-	}
+	return 0;
 }
-
-void LogoRender()
-{
-	printf("LOGO");
-}
-void LogoRelease()
-{
-}
-#pragma endregion
-
-#pragma region Menu
-void MenuInitialize()
-{
-}
-
-void MenuProgress()
-{
-	if (GetAsyncKeyState(VK_SPACE))
-	{
-		MenuRelease();
-		id = STAGE;
-		StageInitialize();
-	}
-}
-
-void MenuRender()
-{
-	printf("MENU");
-}
-
-void MenuRelease()
-{
-}
-#pragma endregion
 
 #pragma region Stage
 void StageInitialize()
 {
-	//PObj == Obj*
-	player = (PObj)malloc(sizeof(Obj));
+	player = (Obj*)malloc(sizeof(Obj));
 	player->x = 10;
-	player->y = 25;
-	player->color = YELLOW;
-	player->shape = "옷";
+	player->y = 10;
+	player->color = WHITE;
+	player->aniIndex = 0;
+	player->shape[0][0] = "   -----|-----";
+	player->shape[0][1] = "*>=====[_]L)";
+	player->shape[0][2] = "      -'-`-";
 
-	for (int i = 0; i < PoopCount; i++)
-	{
-		poops[i] = (PObj)malloc(sizeof(Obj));
-		poops[i]->act = false;
-		poops[i]->x = 0;  //������ ������ % 10 == 0~9
-		poops[i]->y = 0;
-		poops[i]->color = BROWN;
-		poops[i]->shape = "＠";
-	}
+	player->shape[1][0] = "    ----|---- ";
+	player->shape[1][1] = "*>=====[_]L)";
+	player->shape[1][2] = "      -'-`-";
+
+	player->shape[2][0] = "     ---|---  ";
+	player->shape[2][1] = "*>=====[_]L)";
+	player->shape[2][2] = "      -'-`-";
+
+	player->shape[3][0] = "      --|--   ";
+	player->shape[3][1] = "*>=====[_]L)";
+	player->shape[3][2] = "      -'-`-";
+
+	player->shape[4][0] = "       -|-    ";
+	player->shape[4][1] = "*>=====[_]L)";
+	player->shape[4][2] = "      -'-`-";
+
+	player->shape[5][0] = "        +     ";
+	player->shape[5][1] = "*>=====[_]L)";
+	player->shape[5][2] = "      -'-`-";
+
+	player->shape[6][0] = "       -|-    ";
+	player->shape[6][1] = "*>=====[_]L)";
+	player->shape[6][2] = "      -'-`-";
+
+	player->shape[7][0] = "      --|--   ";
+	player->shape[7][1] = "*>=====[_]L)";
+	player->shape[7][2] = "      -'-`-";
+
+	player->shape[8][0] = "     ---|---  ";
+	player->shape[8][1] = "*>=====[_]L)";
+	player->shape[8][2] = "      -'-`-";
+
+	player->shape[9][0] = "    ----|---- ";
+	player->shape[9][1] = "*>=====[_]L)";
+	player->shape[9][2] = "      -'-`-";
+
 }
 
 void StageProgress()
@@ -202,50 +138,36 @@ void StageProgress()
 		player->x++;
 	}
 
-	for (int i = 0; i < PoopCount; i++)
+	if (GetAsyncKeyState(VK_UP))
 	{
-		if (poops[i]->act == false)
-		{
-			poops[i]->x = rand() % 40;
-			poops[i]->act = true;
-			break;
-
-		}
+		player->y--;
 	}
 
-
-	for (int i = 0; i < PoopCount; i++)
+	if (GetAsyncKeyState(VK_DOWN))
 	{
-		if (poops[i]->act == true)
-		{
-			poops[i]->y++;
-			if (poops[i]->y > player->y)
-			{
-				poops[i]->y = 0;
-				poops[i]->act = false;
-			}
-
-			if (poops[i]->x == player->x && poops[i]->y == player->y)
-			{
-				player->color = RED;
-			}
-		}
-
+		player->y++;
 
 	}
 }
 
+int stageCount = 0;
+
 void StageRender()
 {
-	MovePos(player->x, player->y);
-	Paint(player->color);
-	printf(player->shape);
-
-	for (int i = 0; i < PoopCount; i++)
+	stageCount++;
+	if (stageCount == 3)
 	{
-		MovePos(poops[i]->x, poops[i]->y);
-		Paint(poops[i]->color);
-		printf(poops[i]->shape);
+		player->aniIndex++;
+
+		player->aniIndex %= 10;
+		stageCount = 0;
+	}
+
+	for (int i = 0; i < 3; i++)
+	{
+		MovePos(player->x, player->y + i);
+		Paint(player->color);
+		printf(player->shape[player->aniIndex][i]);
 	}
 }
 
@@ -253,10 +175,6 @@ void StageRelease()
 {
 }
 #pragma endregion
-
-#pragma endregion
-
-
 
 #pragma region WIN_API
 void MovePos(int x, int y)
