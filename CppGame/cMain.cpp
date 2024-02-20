@@ -43,6 +43,7 @@ struct Enemy
 	bool act;
 	int x;
 	int y;
+	int speed;
 	COLOR color;
 	const char* shape[3];
 };
@@ -162,9 +163,10 @@ void StageInitialize()
 	{
 		enemy[i] = (Enemy*)malloc(sizeof(Enemy));
 		enemy[i]->act = true;
-		enemy[i]->x = 20;
-		enemy[i]->y = rand()%20 + 10;
-		enemy[i]->color = YELLOW;
+		enemy[i]->speed = 0;
+		enemy[i]->x = rand()%20 + 10;
+		enemy[i]->y = rand()%30;
+		enemy[i]->color = (COLOR)(rand() % 14 + 1);
 		enemy[i]->shape[0] = "□□□□";
 		enemy[i]->shape[1] = "□□□□";
 		enemy[i]->shape[2] = "□□□□";
@@ -180,7 +182,6 @@ void StageInitialize()
 	//enemy->shape[2] = "□□□□";
 
 }
-int enemyspeed;
 void StageProgress()
 {
 	if (GetAsyncKeyState(VK_LEFT))
@@ -219,7 +220,6 @@ void StageProgress()
 
 	for (int i = 0; i < BulletCount; i++)
 	{
-		//if (bullets[i]->act)
 		if (bullets[i]->act == true)
 		{
 			bullets[i]->x++;
@@ -231,11 +231,6 @@ void StageProgress()
 					enemy[j]->x = 40;
 				}
 			}
-
-			
-
-
-
 			if (bullets[i]->x >= 40)
 			{
 				bullets[i]->x = i;
@@ -244,25 +239,36 @@ void StageProgress()
 			}
 		}
 	}
-	enemyspeed++;
-	/*if (enemyspeed == 2)
-	{
-		enemy->x--;
-		if (enemy->x == 0) enemy->x = 40;
-		enemyspeed = 0;
-	}*/
 	
+	for (int i = 0; i < EnemyCount; i++)
+	{
+		enemy[i]->speed++;
+		if (enemy[i]->speed == 2)
+		{
+			enemy[i]->x--;
+			enemy[i]->speed =0;
+		}
+		
+		if (enemy[i]->x == 0)
+		{
+			enemy[i]->x = 40;
+		}
+
+
+	}
+
+
 	for (int i = 0; i < EnemyCount; i++)
 	{
 		if ((enemy[i]->x <= (player->x) || (enemy[i]->x <= (player->x + 6))) && ((player->x < enemy[i]->x + 4) || (player->x + 6 < enemy[i]->x + 4)) &&
 			((enemy[i]->y <= player->y) || (enemy[i]->y <= player->y + 2)) && ((player->y < enemy[i]->y + 3) || (player->y + 2 < enemy[i]->y + 3)))
 		{
-			enemy[i]->color = RED;
+			//enemy[i]->color = RED;
 		}
-		else
+		/*else
 		{
 			enemy[i]->color = YELLOW;
-		}
+		}*/
 	}
 	
 }
@@ -334,7 +340,7 @@ void StageRelease()
 		if (enemy[i] != nullptr)
 		{
 			free(enemy[i]);
-			enemies[i] = nullptr;
+			enemy[i] = nullptr;
 		}
 	}
 
