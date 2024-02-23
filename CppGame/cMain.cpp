@@ -1,161 +1,288 @@
-﻿#include <stdio.h>
-#include <Windows.h>
+﻿#include<stdio.h>
+#include<malloc.h>
+#include<Windows.h>
 
-#define BufferWidth 80	  //가로 버퍼 크기
-#define BufferHeight 40	  //세로 버퍼 크기
-
-HANDLE hBuffer[2];	// 창 두개를 제어하는 핸들
-int screeIndex;		//hBuffer[screeIndex], screenIndex == 0 or 1
-
-
-#pragma region Map
-int map[40][40] =
-{
-	{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
-	{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-	{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-	{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-	{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-	{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-	{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-	{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-	{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-	{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-	{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-	{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-	{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-	{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-	{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-	{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-	{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-	{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-	{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-	{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-	{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-	{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-	{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-	{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-	{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-	{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-	{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-	{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-	{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-	{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-	{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-	{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-	{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-	{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-	{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-	{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-	{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-	{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-	{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-	{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
-
-};
+#pragma region define
+#define EnemyCount 10
+#define ObjSize 4
+#define BulletCount 10
 #pragma endregion
 
 
-//버퍼 초기화
-void InitBuffer()
+#pragma region Enum
+enum COLOR
 {
-	//현재 스크린 index값은 0
-	screeIndex = 0;
+	BLACK,
+	BLUE,
+	GREEN,
+	CYAN,
+	RED,
+	MAGENTA,
+	BROWN,
+	LIGHTGRAY,
+	DARKGRAY,
+	LIGHTBLUE,
+	LIGHTGREEN,
+	LIGHTCYAN,
+	LIGHTRED,
+	LIGHTMAGENTA,
+	YELLOW,
+	WHITE,
 
-	//size.x = 80, size.y = 40 : 화면크기
-	COORD size = { BufferWidth, BufferHeight };
+};
 
-	//창 크기 왼쪽 : 0, 위쪽 : 0, 오른쪽 : 80 - 1, 아래쪽 : 40 - 1 
-	SMALL_RECT rect = { 0, 0, BufferWidth - 1, BufferHeight - 1 };
+#pragma endregion
+#pragma region print
+void MovePos(int x, int y);
+void Paint(int color);
+void HideCursor();
+#pragma endregion
 
-	//0번 버퍼 만들기
-	hBuffer[0] = CreateConsoleScreenBuffer(GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, CONSOLE_TEXTMODE_BUFFER, NULL);
-	//0번 화면 버퍼 사이즈 설정(만든 버퍼 주소, 크기)
-	SetConsoleScreenBufferSize(hBuffer[0], size);
-	//0번 창 사이즈 설정
-	SetConsoleWindowInfo(hBuffer[0], TRUE, &rect);
 
-	//1번 버퍼 만들기
-	hBuffer[1] = CreateConsoleScreenBuffer(GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, CONSOLE_TEXTMODE_BUFFER, NULL);
-	//1번 화면 버퍼 사이즈 설정(만든 버퍼 주소, 크기)
-	SetConsoleScreenBufferSize(hBuffer[1], size);
-	//1번 창 사이즈 설정
-	SetConsoleWindowInfo(hBuffer[1], TRUE, &rect);
-
-	//커서 정보 등록 : 깜박이는 커서 안보이게
-	CONSOLE_CURSOR_INFO info;	//콘솔 커서 정보 구조체
-	info.dwSize = 1;			//커서 크기
-	info.bVisible = FALSE;		//커서 안보이게
-
-	//0 && 1 각각의 버퍼에 커서 정보 등록
-	SetConsoleCursorInfo(hBuffer[0], &info);
-	SetConsoleCursorInfo(hBuffer[1], &info);
-}
-
-void FlipBuffer()
+#pragma region struct
+struct Obj
 {
-	SetConsoleActiveScreenBuffer(hBuffer[screeIndex]);
+	int x;
+	int y;
+	int hp;
+	const char* shape[ObjSize];
+	bool act;
+	COLOR color;
+	int speed;
+};
 
-	screeIndex = !screeIndex;
-}
-
-void ClearBuffer()
+struct Bullet
 {
-	COORD pos = { 0,0 };
-	DWORD dw;
-	FillConsoleOutputCharacter(hBuffer[screeIndex],' ',BufferWidth * BufferHeight, pos, &dw);
-}
+	int x;
+	int y;
+	const char* shape;
+	bool act;
+	COLOR color;
+	int speed;
+};
+#pragma endregion
 
-void WriteBuffer(int x, int y, const char* shape, int color)
-{
-	COORD pos = { x * 2,y};
+Obj* player = nullptr;
+Obj* enemies[EnemyCount] = {};
+Bullet* playerBullet[BulletCount] = {};
+Bullet* enemyBullet[EnemyCount] = {};
 
-	SetConsoleCursorPosition(hBuffer[screeIndex], pos);
-	SetConsoleTextAttribute(hBuffer[screeIndex], color);
-	
-	DWORD dw;
-
-	WriteFile(hBuffer[screeIndex],shape,strlen(shape), &dw, NULL);
-}
-
-void ReleaseBuffer()
-{
-	//버퍼 닫기
-	CloseHandle(hBuffer[0]);
-	CloseHandle(hBuffer[1]);
-}
-
-int main()
-{
-	InitBuffer();
+void Screen();
+void Stage();
+void Play();
+int main() {
+	HideCursor();
+	Screen();
 
 	while (true)
 	{
-		for (int y = 0; y < 40; y++)
+		system("cls");
+		Play();
+		Stage();
+		Sleep(20);
+
+
+	}
+
+	return 0;
+}
+
+
+void Screen()
+{
+	player = (Obj*)malloc(sizeof(Obj));
+	player->x = 0;
+	player->y = 10;
+	player->shape[0] = "┌──────┐";
+	player->shape[1] = "└─┐    └┐  ";
+	player->shape[2] = "┌─┘    ┌┘ ";
+	player->shape[3] = "└──────┘";
+	player->color = YELLOW;
+
+	for (int i = 0; i < BulletCount; i++)
+	{
+		playerBullet[i] = (Bullet*)malloc(sizeof(Bullet));
+		playerBullet[i]->act = false;
+		playerBullet[i]->x = i;
+		playerBullet[i]->y = 0;
+		playerBullet[i]->shape = "●";
+		playerBullet[i]->color = WHITE;
+
+	}
+
+	for (int i = 0; i < EnemyCount; i++)
+	{
+		enemies[i] = (Obj*)malloc(sizeof(Obj));
+		enemies[i]->x = rand() % 10 + 20;
+		enemies[i]->y = rand() % 20 + 5;
+		enemies[i]->act = true;
+		enemies[i]->shape[0] = "┌──┐";
+		enemies[i]->shape[1] = "┃╂ ┃";
+		enemies[i]->shape[2] = "┃  ┃";
+		enemies[i]->shape[3] = "└──┘";
+		enemies[i]->color = (COLOR)(rand() % 14 + 1);
+
+		enemyBullet[i] = (Bullet*)malloc(sizeof(Bullet));
+		enemyBullet[i]->shape = "◎";
+		enemyBullet[i]->act = false;
+		enemyBullet[i]->color = RED;
+		enemyBullet[i]->speed = 0;
+	}
+
+
+}
+void Play()
+{
+	if (GetAsyncKeyState(VK_LEFT))
+	{
+		player->x--;
+	}
+	if (GetAsyncKeyState(VK_RIGHT))
+	{
+		player->x++;
+	}
+	if (GetAsyncKeyState(VK_UP))
+	{
+		player->y--;
+	}
+	if (GetAsyncKeyState(VK_DOWN))
+	{
+		player->y++;
+	}
+	if (GetAsyncKeyState(VK_SPACE))
+	{
+		for (int i = 0; i < BulletCount; i++)
 		{
-			for (int x = 0; x < 40; x++)
+			if (playerBullet[i]->act == false)
 			{
-				switch (map[y][x])
-				{
-				case 1:
-					WriteBuffer(x, y, "■", 13);
-					break;
-				case 0:
-					WriteBuffer(x, y, "○", 14);
-					break;
-				default:
-					break;
-				}
+
+				playerBullet[i]->x = player->x + 5;
+				playerBullet[i]->y = player->y + 2;
+				playerBullet[i]->act = true;
+				break;
 			}
+		}
+	}
+
+	for (int i = 0; i < BulletCount; i++)
+	{
+		if (playerBullet[i]->act == true)
+		{
+			playerBullet[i]->x++;
+
+
+			if (playerBullet[i]->x >= 40)
+			{
+				playerBullet[i]->x = i;
+				playerBullet[i]->y = 0;
+				playerBullet[i]->act = false;
+			}
+		}
+	}
+
+
+
+	for (int i = 0; i < EnemyCount; i++)
+	{
+		if (enemyBullet[i]->act == false)
+		{
+
+			enemyBullet[i]->x = enemies[i]->x - 1;
+			enemyBullet[i]->y = enemies[i]->y + 1;
+			enemyBullet[i]->act = true;
+			break;
+		}
+	}
+
+
+
+	for (int i = 0; i < EnemyCount; i++)
+	{
+
+		if (enemyBullet[i]->act == true)
+		{
+			enemyBullet[i]->x--;
+
+
+			if (enemyBullet[i]->x <= 0)
+			{
+				enemyBullet[i]->x = enemies[i]->x - 1;
+				enemyBullet[i]->y = enemies[i]->y + 1;
+				enemyBullet[i]->act = false;
+			}
+
 		}
 
 
-		FlipBuffer();
-		ClearBuffer();
-
-		Sleep(30);
 	}
 
-	ReleaseBuffer();
+
+
+
 }
 
+void Stage()
+{
+
+	for (int i = 0; i < ObjSize; i++)
+	{
+		MovePos(player->x, player->y + i);
+		printf(player->shape[i]);
+	}
+
+	for (int i = 0; i < BulletCount; i++)
+	{
+		MovePos(playerBullet[i]->x, playerBullet[i]->y);
+		printf(playerBullet[i]->shape);
+	}
+
+	for (int i = 0; i < EnemyCount; i++)
+	{
+		for (int j = 0; j < ObjSize; j++)
+		{
+			MovePos(enemies[i]->x, enemies[i]->y + j);
+			printf(enemies[i]->shape[j]);
+		}
+		MovePos(enemyBullet[i]->x, enemyBullet[i]->y);
+		printf(enemyBullet[i]->shape);
+	}
+
+
+
+
+}
+
+
+
+
+
+
+
+
+#pragma region WIN_API
+void MovePos(int x, int y)
+{
+	COORD pos;
+	pos.X = x * 2;
+	pos.Y = y;
+	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), pos);
+}
+
+void Paint(int color)
+{
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), color);
+}
+
+void HideCursor()
+{
+
+	CONSOLE_CURSOR_INFO info;
+	info.dwSize = 1;
+	info.bVisible = false;
+
+	SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &info);
+
+}
+
+
+#pragma endregion
