@@ -47,6 +47,52 @@ int map[MapSize][MapSize] =
 	{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
 
 };
+
+int ChooseMap[MapSize][MapSize] =
+{
+	{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+	{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+	{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+	{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+	{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+	{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+	{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+	{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+	{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+	{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+	{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+	{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+	{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+	{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+	{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+	{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+	{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+	{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+	{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+	{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+	{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+	{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+	{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+	{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+	{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+	{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+	{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+	{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+	{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+	{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+	{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+	{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+	{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+	{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+	{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+	{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+	{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+	{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+	{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+	{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+
+};
+
 #pragma endregion
 
 #pragma region Buffer
@@ -84,15 +130,33 @@ enum COLOR
 
 };
 
+enum SceneID
+{
+	LOGO,
+	CHOOSE,
+	MAIN,
+	SHOP,
+	BATTLE,
+	OPTION,
+};
+
+enum PlayerType
+{
+	WARRIOR,
+	WIZARD,
+	ARCHER,
+};
+
 #pragma endregion
 
 
+#pragma region startPage
 struct Obj
 {
 	int x;
 	int y;
 	const char* shape;
-	int color;
+	COLOR color;
 };
 
 Obj* selectShape = nullptr;
@@ -100,22 +164,84 @@ Obj* startText = nullptr;
 Obj* optionText = nullptr;
 Obj* exitText = nullptr;
 
+#pragma endregion
 
-void MovePos(int x, int y);
-void Paint(int color);
+SceneID sceneID;
+
+struct Text
+{
+	const char* Description;
+	COLOR color;
+};
+
+#pragma region Player
+PlayerType playerType;
+struct Player
+{
+	int x;
+	int y;
+	const char* shape[3][3];
+	COLOR color;
+	int hp;
+	int mp;
+//	const char* Text;
+	Text text;
+};
+Player* warrior = nullptr;
+Player* wizard = nullptr;
+Player* archer = nullptr;
+
+struct Weapon
+{
+	int x;
+	int y;
+	const char* shape[4];
+	COLOR color;
+	const char* Text;
+};
+
+Weapon* warriorWeapon = nullptr;
+Weapon* wizardWeapon = nullptr;
+Weapon* archerWeapon = nullptr;
+
+#pragma endregion
+
+
+
 void HideCursor();
 
 void Init();
 void MainScreen();
+void Choose();
+void Village();
+
 int main()
 {
+	sceneID = LOGO;
 	HideCursor();
 	InitBuffer();
 	Init();
 
 	while (true)
 	{
-		MainScreen();
+
+		switch (sceneID)
+		{
+		case LOGO: MainScreen();
+			break;
+		case CHOOSE: Choose();
+			break;
+		case MAIN: Village();
+			break;
+		case SHOP:
+			break;
+		case BATTLE:
+			break;
+		case OPTION:
+			break;
+		default:
+			break;
+		}
 		FlipBuffer();
 		ClearBuffer();
 
@@ -151,6 +277,55 @@ void Init()
 	exitText->shape = "EXIT";
 	exitText->color = WHITE;
 
+	warrior = (Player*)malloc(sizeof(Player));
+	warrior->text.Description = "전사";
+	warrior->text.color = WHITE;
+	warrior->x = 25;
+	warrior->y = 7;
+	warrior->shape[0][0] = "  o  ";
+	warrior->shape[0][1] = " /|\\  ";
+	warrior->shape[0][2] = " / \\ ";
+	warriorWeapon = (Weapon*)malloc(sizeof(Weapon));
+	warriorWeapon->x = warrior->x+2;
+	warriorWeapon->y = warrior->y-2;
+	warriorWeapon->shape[0] = "  /▨";
+	warriorWeapon->shape[1] = " /  /";
+	warriorWeapon->shape[2] = " ▨/";
+	warriorWeapon->shape[3] = "/";
+
+	wizard = (Player*)malloc(sizeof(Player));
+	wizard->text.Description = "마법사";
+	wizard->text.color = WHITE;
+	wizard->x = 25;
+	wizard->y = 20;
+	wizard->shape[0][0] = "  o  ";
+	wizard->shape[0][1] = " /|\\  ";
+	wizard->shape[0][2] = " / \\ ";
+	wizardWeapon = (Weapon*)malloc(sizeof(Weapon));
+	wizardWeapon->x = wizard->x + 2;
+	wizardWeapon->y = wizard->y - 2;
+	wizardWeapon->shape[0] = "";
+	wizardWeapon->shape[1] = "  @";
+	wizardWeapon->shape[2] = " /";
+	wizardWeapon->shape[3] = "/";
+
+	archer = (Player*)malloc(sizeof(Player));
+	archer->text.Description = "궁수";
+	archer->text.color = WHITE;
+	archer->x = 25;
+	archer->y = 33;
+	archer->shape[0][0] = "  o  ";
+	archer->shape[0][1] = " /|\\  ";
+	archer->shape[0][2] = " / \\ ";
+	archerWeapon = (Weapon*)malloc(sizeof(Weapon));
+	archerWeapon->x = archer->x + 2;
+	archerWeapon->y = archer->y - 1;
+	archerWeapon->shape[0] = "";
+	archerWeapon->shape[1] = "│\\";
+	archerWeapon->shape[2] = "││";
+	archerWeapon->shape[3] = "│/";
+
+
 }
 void MainScreen()
 {
@@ -173,6 +348,9 @@ void MainScreen()
 	WriteBuffer(startText->x, startText->y, startText->shape, startText->color);
 	WriteBuffer(optionText->x, optionText->y, optionText->shape, optionText->color);
 	WriteBuffer(exitText->x, exitText->y, exitText->shape, exitText->color);
+	WriteBuffer(17,35, "Press ENTER", WHITE);
+
+
 
 	if (GetAsyncKeyState(VK_DOWN) && selectShape->y < exitText->y)
 	{
@@ -191,24 +369,121 @@ void MainScreen()
 	else exitText->color = WHITE;
 
 
-	if (GetAsyncKeyState(VK_SPACE))
+	if (GetAsyncKeyState(VK_RETURN))
 	{
 		if (selectShape->y == startText->y)
 		{
-
+			sceneID = CHOOSE;
+			selectShape->x = 7;
+			selectShape->y = 7;
 		}
 		if (selectShape->y == optionText->y)
 		{
-
+			sceneID = OPTION;
 		}
 		if (selectShape->y == exitText->y)
 		{
 			printf("프로그램이 종료되었습니다.");
 			exit(0);
 		}
+
+	}
+
+}
+
+void Choose()
+{
+
+	for (int y = 0; y < MapSize; y++)
+	{
+		for (int x = 0; x < MapSize; x++)
+		{
+			switch (ChooseMap[y][x])
+			{
+			case 1:
+				WriteBuffer(x, y, "■", YELLOW);
+				break;
+
+			default:
+				break;
+			}
+		}
+	}
+	WriteBuffer(15, 1, "Press SPACE to select",WHITE);
+
+
+	WriteBuffer(warrior->x - 10, warrior->y , warrior->text.Description, warrior->text.color);
+	WriteBuffer(wizard->x - 10, wizard->y, wizard->text.Description, wizard->text.color);
+	WriteBuffer(archer->x - 10, archer->y, archer->text.Description, archer->text.color);
+
+	if (selectShape->y == warrior->y) warrior->text.color = RED;
+	else warrior->text.color = WHITE;
+	if (selectShape->y == wizard->y) wizard->text.color = RED;
+	else wizard->text.color = WHITE;
+	if (selectShape->y == archer->y) archer->text.color = RED;
+	else archer->text.color = WHITE;
+
+
+
+	for (int i = 0; i < 3; i++)
+	{
+		WriteBuffer(warrior->x, warrior->y+i, warrior->shape[0][i], WHITE);
+	}
+	for (int i = 0; i < 4; i++)
+	{
+		WriteBuffer(warriorWeapon->x, warriorWeapon->y + i, warriorWeapon->shape[i], WHITE);
+	}
+
+	for (int i = 0; i < 3; i++)
+	{
+		WriteBuffer(wizard->x, wizard->y + i, wizard->shape[0][i], WHITE);
+	}
+	for (int i = 0; i < 4; i++)
+	{
+		WriteBuffer(wizardWeapon->x, wizardWeapon->y + i, wizardWeapon->shape[i], WHITE);
+	}
+	
+	for (int i = 0; i < 3; i++)
+	{
+		WriteBuffer(archer->x, archer->y + i, archer->shape[0][i], WHITE);
+	}
+	for (int i = 0; i < 4; i++)
+	{
+		WriteBuffer(archerWeapon->x, archerWeapon->y + i, archerWeapon->shape[i], WHITE);
 	}
 
 
+
+	
+	WriteBuffer(selectShape->x, selectShape->y, selectShape->shape, selectShape->color);
+
+	if (GetAsyncKeyState(VK_DOWN) && selectShape->y <30)
+	{
+		selectShape->y += 13;
+	}
+	if (GetAsyncKeyState(VK_UP) && selectShape->y > 10)
+	{
+		selectShape->y -= 13;
+	}
+
+
+	if (GetAsyncKeyState(VK_SPACE))
+	{
+		if (selectShape->y == warrior->y) playerType = WARRIOR;
+		if (selectShape->y == wizard->y) playerType = WIZARD;
+		if (selectShape->y == archer->y) playerType = ARCHER;
+
+		sceneID = MAIN;
+	}
+
+
+
+}
+
+
+void Village()
+{
+	WriteBuffer(10, 10, "test", WHITE);
 }
 
 
@@ -285,18 +560,7 @@ void ReleaseBuffer()
 #pragma endregion
 
 #pragma region WIN_API
-void MovePos(int x, int y)
-{
-	COORD pos;
-	pos.X = x * 2;
-	pos.Y = y;
-	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), pos);
-}
 
-void Paint(int color)
-{
-	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), color);
-}
 
 void HideCursor()
 {
