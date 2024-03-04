@@ -147,6 +147,13 @@ enum PlayerType
 	ARCHER,
 };
 
+//옵션에서 복귀
+enum Prev
+{
+	OPTIONLOGO,
+	OPTIONMAIN,
+};
+
 #pragma endregion
 
 
@@ -167,15 +174,15 @@ Obj* exitText = nullptr;
 #pragma endregion
 
 SceneID sceneID;
-
+Prev prev;
 struct Text
 {
-	const char* Description;
+	const char* Description[3];
 	COLOR color;
 };
 
 #pragma region Player
-PlayerType playerType;
+
 struct Player
 {
 	int x;
@@ -184,9 +191,10 @@ struct Player
 	COLOR color;
 	int hp;
 	int mp;
-//	const char* Text;
 	Text text;
+	PlayerType playerType;
 };
+Player* player = nullptr;
 Player* warrior = nullptr;
 Player* wizard = nullptr;
 Player* archer = nullptr;
@@ -199,12 +207,33 @@ struct Weapon
 	COLOR color;
 	const char* Text;
 };
-
+Weapon* playerWeapon = nullptr;
 Weapon* warriorWeapon = nullptr;
 Weapon* wizardWeapon = nullptr;
 Weapon* archerWeapon = nullptr;
 
 #pragma endregion
+
+struct Box
+{
+	const char* boxShape[3];
+};
+Box* box;
+struct VillageChoose
+{
+	const char* name;
+	int x;
+	int y;
+	COLOR color;
+};
+VillageChoose* VgBATTLE;
+VillageChoose* VgBAG;
+VillageChoose* VgOPTION;
+VillageChoose* VgSHOP;
+VillageChoose* VgSTATUS;
+VillageChoose* VgEXIT;
+
+
 
 
 
@@ -212,9 +241,12 @@ void HideCursor();
 
 void Init();
 void MainScreen();
+void Option();
 void Choose();
 void Village();
 
+
+int gameSpeed = 50;
 int main()
 {
 	sceneID = LOGO;
@@ -237,7 +269,7 @@ int main()
 			break;
 		case BATTLE:
 			break;
-		case OPTION:
+		case OPTION: Option();
 			break;
 		default:
 			break;
@@ -245,7 +277,7 @@ int main()
 		FlipBuffer();
 		ClearBuffer();
 
-		Sleep(30);
+		Sleep(gameSpeed);
 	}
 
 	ReleaseBuffer();
@@ -277,14 +309,25 @@ void Init()
 	exitText->shape = "EXIT";
 	exitText->color = WHITE;
 
+	player = (Player*)malloc(sizeof(Player));
+	player->shape[0][0] = "  o  ";
+	player->shape[0][1] = " /|\\  ";
+	player->shape[0][2] = " / \\ ";
+	playerWeapon = (Weapon*)malloc(sizeof(Weapon));
+	playerWeapon->x = player->x + 2;
+	playerWeapon->y = player->y - 2;
+
+
 	warrior = (Player*)malloc(sizeof(Player));
-	warrior->text.Description = "전사";
+	warrior->text.Description[0] = "전사";
+	warrior->text.Description[1] = "높은 기본능력치";
+	warrior->text.Description[2] = "기본공격 위주의 캐릭터";
 	warrior->text.color = WHITE;
-	warrior->x = 25;
+	warrior->x = 15;
 	warrior->y = 7;
-	warrior->shape[0][0] = "  o  ";
-	warrior->shape[0][1] = " /|\\  ";
-	warrior->shape[0][2] = " / \\ ";
+	warrior->shape[0][0] = player->shape[0][0];
+	warrior->shape[0][1] = player->shape[0][1];
+	warrior->shape[0][2] = player->shape[0][2];
 	warriorWeapon = (Weapon*)malloc(sizeof(Weapon));
 	warriorWeapon->x = warrior->x+2;
 	warriorWeapon->y = warrior->y-2;
@@ -294,13 +337,15 @@ void Init()
 	warriorWeapon->shape[3] = "/";
 
 	wizard = (Player*)malloc(sizeof(Player));
-	wizard->text.Description = "마법사";
+	wizard->text.Description[0] = "마법사";
+	wizard->text.Description[1] = "높은 공격력, 낮은 방어력과 체력";
+	wizard->text.Description[2] = "스킬공격 위주의 캐릭터";
 	wizard->text.color = WHITE;
-	wizard->x = 25;
+	wizard->x = 15;
 	wizard->y = 20;
-	wizard->shape[0][0] = "  o  ";
-	wizard->shape[0][1] = " /|\\  ";
-	wizard->shape[0][2] = " / \\ ";
+	wizard->shape[0][0] = player->shape[0][0];
+	wizard->shape[0][1] = player->shape[0][1];
+	wizard->shape[0][2] = player->shape[0][2];
 	wizardWeapon = (Weapon*)malloc(sizeof(Weapon));
 	wizardWeapon->x = wizard->x + 2;
 	wizardWeapon->y = wizard->y - 2;
@@ -310,13 +355,15 @@ void Init()
 	wizardWeapon->shape[3] = "/";
 
 	archer = (Player*)malloc(sizeof(Player));
-	archer->text.Description = "궁수";
+	archer->text.Description[0] = "궁수";
+	archer->text.Description[1] = "평범한 능력치, 확률성 치명타와 회피";
+	archer->text.Description[2] = "치명타 공격 캐릭터";
 	archer->text.color = WHITE;
-	archer->x = 25;
+	archer->x = 15;
 	archer->y = 33;
-	archer->shape[0][0] = "  o  ";
-	archer->shape[0][1] = " /|\\  ";
-	archer->shape[0][2] = " / \\ ";
+	archer->shape[0][0] = player->shape[0][0];
+	archer->shape[0][1] = player->shape[0][1];
+	archer->shape[0][2] = player->shape[0][2];
 	archerWeapon = (Weapon*)malloc(sizeof(Weapon));
 	archerWeapon->x = archer->x + 2;
 	archerWeapon->y = archer->y - 1;
@@ -324,6 +371,48 @@ void Init()
 	archerWeapon->shape[1] = "│\\";
 	archerWeapon->shape[2] = "││";
 	archerWeapon->shape[3] = "│/";
+
+
+	box = (Box*)malloc(sizeof(Box));
+	box->boxShape[0] = "┌──────────┐";
+	box->boxShape[1] = "│          │";
+	box->boxShape[2] = "└──────────┘";
+
+	VgBATTLE = (VillageChoose*)malloc(sizeof(VillageChoose));
+	VgBATTLE->name = "전투";
+	VgBATTLE->x = 22;
+	VgBATTLE->y = 6;
+	VgBATTLE->color = WHITE;
+	
+	VgBAG = (VillageChoose*)malloc(sizeof(VillageChoose));
+	VgBAG->name = "가방";
+	VgBAG->x = 22;
+	VgBAG->y = 16;
+	VgBAG->color = WHITE;
+
+	VgOPTION = (VillageChoose*)malloc(sizeof(VillageChoose));
+	VgOPTION->name = "옵션";
+	VgOPTION->x = 22;
+	VgOPTION->y = 26;
+	VgOPTION->color = WHITE;
+
+	VgSHOP = (VillageChoose*)malloc(sizeof(VillageChoose));
+	VgSHOP->name = "상점";
+	VgSHOP->x = 32;
+	VgSHOP->y = 6;
+	VgSHOP->color = WHITE;
+
+	VgSTATUS = (VillageChoose*)malloc(sizeof(VillageChoose));
+	VgSTATUS->name = "능력치";
+	VgSTATUS->x = 32;
+	VgSTATUS->y = 16;
+	VgSTATUS->color = WHITE;
+
+	VgEXIT = (VillageChoose*)malloc(sizeof(VillageChoose));
+	VgEXIT->name = "종료";
+	VgEXIT->x = 32;
+	VgEXIT->y = 26;
+	VgEXIT->color = WHITE;
 
 
 }
@@ -348,7 +437,7 @@ void MainScreen()
 	WriteBuffer(startText->x, startText->y, startText->shape, startText->color);
 	WriteBuffer(optionText->x, optionText->y, optionText->shape, optionText->color);
 	WriteBuffer(exitText->x, exitText->y, exitText->shape, exitText->color);
-	WriteBuffer(17,35, "Press ENTER", WHITE);
+	WriteBuffer(15,35, "ENTER키로 선택", WHITE);
 
 
 
@@ -379,6 +468,7 @@ void MainScreen()
 		}
 		if (selectShape->y == optionText->y)
 		{
+			prev = OPTIONLOGO;
 			sceneID = OPTION;
 		}
 		if (selectShape->y == exitText->y)
@@ -390,6 +480,44 @@ void MainScreen()
 	}
 
 }
+int changeSpeed = gameSpeed;
+void Option() {
+	
+
+	WriteBuffer(15, 15, "게임 속도 선택", WHITE);
+
+	WriteBuffer(16, 20, "-", WHITE);
+	WriteBuffer(20, 20, "-", WHITE);
+	
+	WriteBuffer(13, 24, "방향키 위 아래로 변경", WHITE);
+	WriteBuffer(13, 26, "ENTER키로 설정", WHITE);
+	WriteBuffer(13, 28, "높을수록 느려집니다", WHITE);
+
+
+	char sNum[5];
+
+	_itoa_s(changeSpeed, sNum, 10);
+
+	WriteBuffer(18, 20, sNum, WHITE);
+
+	if (GetAsyncKeyState(VK_UP) && changeSpeed < 90)
+	{
+		changeSpeed += 10;
+	}
+	if (GetAsyncKeyState(VK_DOWN) && changeSpeed > 30)
+	{
+		changeSpeed -= 10;
+	}
+	if (GetAsyncKeyState(VK_RETURN))
+	{
+		gameSpeed = changeSpeed;
+		if (prev == OPTIONLOGO)
+			sceneID = LOGO;
+		else if (prev == OPTIONMAIN)
+			sceneID = MAIN;
+	}
+}
+
 
 void Choose()
 {
@@ -409,13 +537,18 @@ void Choose()
 			}
 		}
 	}
-	WriteBuffer(15, 1, "Press SPACE to select",WHITE);
+	WriteBuffer(13, 1, "SPACE키로 직업을 선택하세요",WHITE);
 
 
-	WriteBuffer(warrior->x - 10, warrior->y , warrior->text.Description, warrior->text.color);
-	WriteBuffer(wizard->x - 10, wizard->y, wizard->text.Description, wizard->text.color);
-	WriteBuffer(archer->x - 10, archer->y, archer->text.Description, archer->text.color);
-
+	WriteBuffer(warrior->x - 5, warrior->y , warrior->text.Description[0], warrior->text.color);
+	WriteBuffer(warrior->x + 5, warrior->y+1, warrior->text.Description[1], warrior->text.color);
+	WriteBuffer(warrior->x + 5, warrior->y+2, warrior->text.Description[2], warrior->text.color);
+	WriteBuffer(wizard->x - 5, wizard->y, wizard->text.Description[0], wizard->text.color);
+	WriteBuffer(wizard->x + 5, wizard->y+1, wizard->text.Description[1], wizard->text.color);
+	WriteBuffer(wizard->x + 5, wizard->y+2, wizard->text.Description[2], wizard->text.color);
+	WriteBuffer(archer->x - 5, archer->y, archer->text.Description[0], archer->text.color);
+	WriteBuffer(archer->x + 5, archer->y+1, archer->text.Description[1], archer->text.color);
+	WriteBuffer(archer->x + 5, archer->y+2, archer->text.Description[2], archer->text.color);
 	if (selectShape->y == warrior->y) warrior->text.color = RED;
 	else warrior->text.color = WHITE;
 	if (selectShape->y == wizard->y) wizard->text.color = RED;
@@ -469,10 +602,34 @@ void Choose()
 
 	if (GetAsyncKeyState(VK_SPACE))
 	{
-		if (selectShape->y == warrior->y) playerType = WARRIOR;
-		if (selectShape->y == wizard->y) playerType = WIZARD;
-		if (selectShape->y == archer->y) playerType = ARCHER;
+		if (selectShape->y == warrior->y)
+		{
+			player = warrior;
+			player->playerType = WARRIOR;
+			playerWeapon = warriorWeapon;
+		}
+		if (selectShape->y == wizard->y)
+		{
+			player = wizard;
+			player->playerType = WIZARD;
+			playerWeapon = wizardWeapon;
+		}
+		if (selectShape->y == archer->y)
+		{
+			player = archer;
+			player->playerType = ARCHER;
+			playerWeapon = archerWeapon;
+		}
+		player->x = 5;
+		player->y = 10;
+		playerWeapon->x = player->x + 2;
+		if(player -> playerType !=ARCHER)
+		playerWeapon->y = player->y - 2;
+		else playerWeapon->y = player->y - 1;
 
+		
+		selectShape->x = 18;
+		selectShape->y = 6;
 		sceneID = MAIN;
 	}
 
@@ -483,7 +640,139 @@ void Choose()
 
 void Village()
 {
-	WriteBuffer(10, 10, "test", WHITE);
+	for (int y = 0; y < MapSize; y++)
+	{
+		for (int x = 0; x < MapSize; x++)
+		{
+			switch (map[y][x])
+			{
+			case 1:
+				WriteBuffer(x, y, "■", YELLOW);
+				break;
+
+			default:
+				break;
+			}
+		}
+	}
+
+	for (int i = 0; i < 3; i++)
+	{
+		WriteBuffer(player->x, player->y + i, player->shape[0][i], WHITE);
+	}
+	for (int i = 0; i < 4; i++)
+	{
+		WriteBuffer(playerWeapon->x, playerWeapon->y + i, playerWeapon->shape[i], WHITE);
+	}
+
+
+	for (int k = 0; k < 2; k++)
+	{
+
+		for (int j = 0; j < 3; j++)
+		{
+			for (int i = 0; i < 3; i++)
+			{
+				WriteBuffer(20 + k * 10, 5 + i + j * 10, box->boxShape[i], WHITE);
+			}
+		}
+	}
+	
+	WriteBuffer(VgBATTLE->x, VgBATTLE->y, VgBATTLE->name, VgBATTLE->color);
+	WriteBuffer(VgBAG->x, VgBAG->y, VgBAG->name, VgBAG->color);
+	WriteBuffer(VgOPTION->x, VgOPTION->y, VgOPTION->name, VgOPTION->color);
+	WriteBuffer(VgSHOP->x, VgSHOP->y, VgSHOP->name, VgSHOP->color);
+	WriteBuffer(VgSTATUS->x, VgSTATUS->y, VgSTATUS->name, VgSTATUS->color);
+	WriteBuffer(VgEXIT->x, VgEXIT->y, VgEXIT->name, VgEXIT->color);
+
+	WriteBuffer(selectShape->x, selectShape->y, selectShape->shape, WHITE);
+
+	if (GetAsyncKeyState(VK_DOWN) && selectShape->y < 26)
+	{
+		selectShape->y += 10;
+	}
+	if (GetAsyncKeyState(VK_UP) && selectShape->y > 6)
+	{
+		selectShape->y -= 10;
+	}
+	if (GetAsyncKeyState(VK_RIGHT) && selectShape->x < 28 )
+	{
+		selectShape-> x += 10;
+	}
+	if (GetAsyncKeyState(VK_LEFT) && selectShape->x > 18)
+	{
+		selectShape-> x -= 10;
+	}
+
+	if (GetAsyncKeyState(VK_RETURN))
+	{
+		if (VgBATTLE->y == selectShape->y && selectShape->x < 20)
+		{
+			sceneID = BATTLE;
+		}
+		if (VgBAG->y == selectShape->y && selectShape->x < 20)
+		{
+				
+		}
+		if (VgOPTION->y == selectShape->y && selectShape->x < 20)
+		{
+			prev = OPTIONMAIN;
+			sceneID = OPTION;
+		}
+		if (VgSHOP->y == selectShape->y && selectShape->x > 20)
+		{
+			
+		}
+		if (VgSTATUS->y == selectShape->y && selectShape->x > 20)
+		{
+			
+		}
+		if (VgEXIT->y == selectShape->y && selectShape->x > 20)
+		{
+			printf("프로그램이 종료되었습니다.");
+			exit(0);
+		}
+	}
+
+
+#pragma region COLOR
+	if (VgBATTLE->y == selectShape->y && selectShape->x < 20)
+	{
+		VgBATTLE->color = RED;
+	}
+	else VgBATTLE->color = WHITE;
+	if (VgBAG->y == selectShape->y && selectShape->x < 20)
+	{
+		VgBAG->color = RED;
+	}
+	else VgBAG->color = WHITE;
+	if (VgOPTION->y == selectShape->y && selectShape->x < 20)
+	{
+		VgOPTION->color = RED;
+	}
+	else VgOPTION->color = WHITE;
+	if (VgSHOP->y == selectShape->y && selectShape->x > 20)
+	{
+		VgSHOP->color = RED;
+	}
+	else VgSHOP->color = WHITE;
+	if (VgSTATUS->y == selectShape->y && selectShape->x > 20)
+	{
+		VgSTATUS->color = RED;
+	}
+	else VgSTATUS->color = WHITE;
+	if (VgEXIT->y == selectShape->y && selectShape->x > 20)
+	{
+		VgEXIT->color = RED;
+	}
+	else VgEXIT->color = WHITE;
+#pragma endregion
+
+
+	
+
+
+
 }
 
 
