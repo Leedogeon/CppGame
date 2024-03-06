@@ -1,6 +1,7 @@
 ﻿#include <stdio.h>
 #include <Windows.h>
-
+#include <stdlib.h> 
+#include <time.h> 
 #pragma region Map
 #define MapSize 40
 int map[MapSize][MapSize] =
@@ -139,6 +140,7 @@ enum SceneID
 	BATTLE,
 	OPTION,
 	STATUS,
+	END,
 };
 
 enum PlayerType
@@ -186,6 +188,7 @@ struct Text
 
 struct Player
 {
+	int level;
 	int maxHp;
 	int maxMp;
 	int x;
@@ -198,6 +201,7 @@ struct Player
 	Text text;
 	PlayerType playerType;
 	bool act;
+	bool critical;
 };
 Player* player = nullptr;
 Player* warrior = nullptr;
@@ -223,8 +227,10 @@ struct Skill
 	int x;
 	int y;
 	const char* shape;
+	COLOR textColor;
 	COLOR color;
 	const char* Text;
+	bool act;
 };
 Skill* normal = nullptr;
 Skill* warriorSkill = nullptr;
@@ -255,9 +261,10 @@ VillageChoose* VgSTATUS;
 VillageChoose* VgEXIT;
 
 
+#pragma region  function
 void HideCursor();
-
 void Init();
+void InitRelease();
 void MainScreen();
 void Option();
 void Choose();
@@ -267,11 +274,13 @@ void Battle();
 void returnVillage();
 void PlayerView();
 void EnemyView();
-void Attack1();
-void Attack2();
-void Attack3();
+void Attack(int num);
+void End(int num);
+void effectRemove(int num);
+#pragma endregion
 
 int gameSpeed = 50;
+int exitCheck = 0;
 int main()
 {
 	sceneID = LOGO;
@@ -295,6 +304,8 @@ int main()
 		case OPTION: Option();
 			break;
 		case STATUS: Status();
+			break;
+		case END: End(exitCheck);
 			break;
 		default:
 			break;
@@ -358,13 +369,13 @@ void Init()
 	warrior->shape[0][1] = player->shape[0][1];
 	warrior->shape[0][2] = player->shape[0][2];
 	warriorWeapon = (Weapon*)malloc(sizeof(Weapon));
-	warriorWeapon->x = warrior->x+2;
-	warriorWeapon->y = warrior->y-2;
+	warriorWeapon->x = warrior->x + 2;
+	warriorWeapon->y = warrior->y - 2;
 	warriorWeapon->shape[0] = "  /▨";
 	warriorWeapon->shape[1] = " /  /";
 	warriorWeapon->shape[2] = " ▨/";
 	warriorWeapon->shape[3] = "/";
-	
+
 	wizard = (Player*)malloc(sizeof(Player));
 	wizard->text.Description[0] = "마법사";
 	wizard->text.Description[1] = "높은 공격력, 낮은 체력";
@@ -427,7 +438,7 @@ void Init()
 
 	archerSkill = (Skill*)malloc(sizeof(Skill));
 	archerSkill->Text = "더블샷";
-	archerSkill->shape = ">--> >-->";
+	archerSkill->shape = ">=>";
 	archerSkill->color = YELLOW;
 
 
@@ -442,7 +453,7 @@ void Init()
 	Enemy->shape[0][1] = "│ ┼ │";
 	Enemy->shape[0][2] = "└───┘";
 	enemySkill = (Skill*)malloc(sizeof(Skill));
-	enemySkill -> x = Enemy->x - 2;
+	enemySkill->x = Enemy->x - 2;
 	enemySkill->y = Enemy->y + 1;
 	enemySkill->shape = "※";
 	enemySkill->color = RED;
@@ -460,7 +471,7 @@ void Init()
 	VgBATTLE->x = 22;
 	VgBATTLE->y = 6;
 	VgBATTLE->color = WHITE;
-	
+
 	VgBAG = (VillageChoose*)malloc(sizeof(VillageChoose));
 	VgBAG->name = "가방";
 	VgBAG->x = 22;
@@ -514,7 +525,7 @@ void MainScreen()
 	WriteBuffer(startText->x, startText->y, startText->shape, startText->color);
 	WriteBuffer(optionText->x, optionText->y, optionText->shape, optionText->color);
 	WriteBuffer(exitText->x, exitText->y, exitText->shape, exitText->color);
-	WriteBuffer(15,35, "ENTER키로 선택", WHITE);
+	WriteBuffer(15, 35, "ENTER키로 선택", WHITE);
 
 
 
@@ -550,8 +561,8 @@ void MainScreen()
 		}
 		if (selectShape->y == exitText->y)
 		{
-			printf("프로그램이 종료되었습니다.");
-			exit(0);
+			sceneID = END;
+			exitCheck = 1;
 		}
 
 	}
@@ -559,13 +570,13 @@ void MainScreen()
 }
 int changeSpeed = gameSpeed;
 void Option() {
-	
+
 
 	WriteBuffer(15, 15, "게임 속도 선택", WHITE);
 
 	WriteBuffer(16, 20, "-", WHITE);
 	WriteBuffer(20, 20, "-", WHITE);
-	
+
 	WriteBuffer(13, 24, "방향키 위 아래로 변경", WHITE);
 	WriteBuffer(13, 26, "ENTER키로 설정", WHITE);
 	WriteBuffer(13, 28, "높을수록 느려집니다", WHITE);
@@ -594,8 +605,6 @@ void Option() {
 			sceneID = MAIN;
 	}
 }
-
-
 void Choose()
 {
 
@@ -614,18 +623,18 @@ void Choose()
 			}
 		}
 	}
-	WriteBuffer(13, 1, "SPACE키로 직업을 선택하세요",WHITE);
+	WriteBuffer(13, 1, "SPACE키로 직업을 선택하세요", WHITE);
 
 
-	WriteBuffer(warrior->x - 5, warrior->y , warrior->text.Description[0], warrior->text.color);
-	WriteBuffer(warrior->x + 5, warrior->y+1, warrior->text.Description[1], warrior->text.color);
-	WriteBuffer(warrior->x + 5, warrior->y+2, warrior->text.Description[2], warrior->text.color);
+	WriteBuffer(warrior->x - 5, warrior->y, warrior->text.Description[0], warrior->text.color);
+	WriteBuffer(warrior->x + 5, warrior->y + 1, warrior->text.Description[1], warrior->text.color);
+	WriteBuffer(warrior->x + 5, warrior->y + 2, warrior->text.Description[2], warrior->text.color);
 	WriteBuffer(wizard->x - 5, wizard->y, wizard->text.Description[0], wizard->text.color);
-	WriteBuffer(wizard->x + 5, wizard->y+1, wizard->text.Description[1], wizard->text.color);
-	WriteBuffer(wizard->x + 5, wizard->y+2, wizard->text.Description[2], wizard->text.color);
+	WriteBuffer(wizard->x + 5, wizard->y + 1, wizard->text.Description[1], wizard->text.color);
+	WriteBuffer(wizard->x + 5, wizard->y + 2, wizard->text.Description[2], wizard->text.color);
 	WriteBuffer(archer->x - 5, archer->y, archer->text.Description[0], archer->text.color);
-	WriteBuffer(archer->x + 5, archer->y+1, archer->text.Description[1], archer->text.color);
-	WriteBuffer(archer->x + 5, archer->y+2, archer->text.Description[2], archer->text.color);
+	WriteBuffer(archer->x + 5, archer->y + 1, archer->text.Description[1], archer->text.color);
+	WriteBuffer(archer->x + 5, archer->y + 2, archer->text.Description[2], archer->text.color);
 	if (selectShape->y == warrior->y) warrior->text.color = RED;
 	else warrior->text.color = WHITE;
 	if (selectShape->y == wizard->y) wizard->text.color = RED;
@@ -637,7 +646,7 @@ void Choose()
 
 	for (int i = 0; i < 3; i++)
 	{
-		WriteBuffer(warrior->x, warrior->y+i, warrior->shape[0][i], WHITE);
+		WriteBuffer(warrior->x, warrior->y + i, warrior->shape[0][i], WHITE);
 	}
 	for (int i = 0; i < 4; i++)
 	{
@@ -652,7 +661,7 @@ void Choose()
 	{
 		WriteBuffer(wizardWeapon->x, wizardWeapon->y + i, wizardWeapon->shape[i], WHITE);
 	}
-	
+
 	for (int i = 0; i < 3; i++)
 	{
 		WriteBuffer(archer->x, archer->y + i, archer->shape[0][i], WHITE);
@@ -664,10 +673,10 @@ void Choose()
 
 
 
-	
+
 	WriteBuffer(selectShape->x, selectShape->y, selectShape->shape, selectShape->color);
 
-	if (GetAsyncKeyState(VK_DOWN) && selectShape->y <30)
+	if (GetAsyncKeyState(VK_DOWN) && selectShape->y < 30)
 	{
 		selectShape->y += 13;
 	}
@@ -703,25 +712,64 @@ void Choose()
 		player->x = 5;
 		player->y = 10;
 		playerWeapon->x = player->x + 2;
-		if(player -> playerType !=ARCHER)
-		playerWeapon->y = player->y - 2;
+		if (player->playerType != ARCHER)
+			playerWeapon->y = player->y - 2;
 		else playerWeapon->y = player->y - 1;
 
-		if (player->playerType != WARRIOR)
-		{
-			playerSkill->x = player->x + 4;
-			playerSkill->y = player->y + 1;
-		}
-		
+		effectRemove(1);
 
+		player->level = 1;
+		player->critical = false;
+		playerSkill->act = false;
+		playerSkill->textColor = WHITE;
 		returnVillage();
+		InitRelease();
+
+	}
+}
+void InitRelease()
+{
+	if (player->playerType == WARRIOR)
+	{
+		if (wizard != nullptr)
+		{
+			free(wizard);
+			wizard = nullptr;
+		}
+		if (archer != nullptr)
+		{
+			free(archer);
+			archer = nullptr;
+		}
+	}
+	if (player->playerType == WIZARD)
+	{
+		if (warrior != nullptr)
+		{
+			free(warrior);
+			warrior = nullptr;
+		}
+		if (archer != nullptr)
+		{
+			free(archer);
+			archer = nullptr;
+		}
+	}
+	if (player->playerType == ARCHER)
+	{
+		if (wizard != nullptr)
+		{
+			free(wizard);
+			wizard = nullptr;
+		}
+		if (warrior != nullptr)
+		{
+			free(warrior);
+			warrior = nullptr;
+		}
 	}
 
-
-
 }
-
-
 void Village()
 {
 	for (int y = 0; y < MapSize; y++)
@@ -752,7 +800,7 @@ void Village()
 			}
 		}
 	}
-	
+
 	WriteBuffer(VgBATTLE->x, VgBATTLE->y, VgBATTLE->name, VgBATTLE->color);
 	WriteBuffer(VgBAG->x, VgBAG->y, VgBAG->name, VgBAG->color);
 	WriteBuffer(VgOPTION->x, VgOPTION->y, VgOPTION->name, VgOPTION->color);
@@ -770,13 +818,13 @@ void Village()
 	{
 		selectShape->y -= 10;
 	}
-	if (GetAsyncKeyState(VK_RIGHT) && selectShape->x < 28 )
+	if (GetAsyncKeyState(VK_RIGHT) && selectShape->x < 28)
 	{
-		selectShape-> x += 10;
+		selectShape->x += 10;
 	}
 	if (GetAsyncKeyState(VK_LEFT) && selectShape->x > 18)
 	{
-		selectShape-> x -= 10;
+		selectShape->x -= 10;
 	}
 
 	if (GetAsyncKeyState(VK_RETURN))
@@ -791,7 +839,7 @@ void Village()
 		}
 		if (VgBAG->y == selectShape->y && selectShape->x < 20)
 		{
-				
+
 		}
 		if (VgOPTION->y == selectShape->y && selectShape->x < 20)
 		{
@@ -806,12 +854,12 @@ void Village()
 		if (VgSTATUS->y == selectShape->y && selectShape->x > 20)
 		{
 			sceneID = STATUS;
-			
+
 		}
 		if (VgEXIT->y == selectShape->y && selectShape->x > 20)
 		{
-			printf("프로그램이 종료되었습니다.");
-			exit(0);
+			sceneID = END;
+			exitCheck = 1;
 		}
 	}
 
@@ -851,8 +899,8 @@ void Village()
 
 
 }
-
 int levelcnt = 0;
+int battleSpeed = 0;
 void Battle()
 {
 	for (int y = 0; y < MapSize; y++)
@@ -874,68 +922,107 @@ void Battle()
 	PlayerView();
 	EnemyView();
 	WriteBuffer(6, 31, normal->Text, normal->color);
-	WriteBuffer(16, 31, playerSkill->Text, playerSkill->color);
+	WriteBuffer(16, 31, playerSkill->Text, playerSkill->textColor);
 	WriteBuffer(selectShape->x, selectShape->y, selectShape->shape, selectShape->color);
 
-
-	if (GetAsyncKeyState(VK_LEFT) && selectShape->x >4)
+	if (player->act == true)
 	{
-		selectShape->x -= 10;
-
-	}
-	
-	if (GetAsyncKeyState(VK_RIGHT) && selectShape->x < 14)
-	{
-		selectShape->x += 10;
-	}
-
-	if (selectShape->x < 10)  normal->color = RED;
-	else normal->color = WHITE;
-	if (selectShape->x > 10)  playerSkill->color = RED;
-	else playerSkill->color = WHITE;
-
-	
-	if (GetAsyncKeyState(VK_RETURN) && player-> act == true)
-	{
-		if (selectShape->x < 10) Attack1();
-		if (selectShape->x > 10)
+		if (GetAsyncKeyState(VK_LEFT) && selectShape->x > 4)
 		{
-			if (player->mp >= 5) Attack2();
-			else WriteBuffer(16,29,"MP부족",RED);
+			selectShape->x -= 10;
+
 		}
 
-		player->act = false;
-		Enemy->act = true;
+		if (GetAsyncKeyState(VK_RIGHT) && selectShape->x < 14)
+		{
+			selectShape->x += 10;
+		}
+
+		if (selectShape->x < 10)  normal->color = RED;
+		else normal->color = WHITE;
+		if (selectShape->x > 10)  playerSkill->textColor = RED;
+		else playerSkill->textColor = WHITE;
+
+
+		if (GetAsyncKeyState(VK_RETURN) && player->act == true)
+		{
+			if (selectShape->x < 10)
+			{
+				Attack(1);
+				player->act = false;
+				Enemy->act = true;
+			}
+			if (selectShape->x > 10)
+			{
+				if (player->mp >= 5)
+				{
+					playerSkill->act = true;
+					player->act = false;
+				}
+				else WriteBuffer(16, 29, "MP부족", RED);
+			}
+		}
 	}
 
-	if (Enemy->hp == 0)
+
+	if (playerSkill->act == true)
 	{
+		WriteBuffer(playerSkill->x, playerSkill->y, playerSkill->shape, playerSkill->color);
+		playerSkill->x++;
+		if (playerSkill->x == Enemy->x)
+		{
+			Attack(2);
+			playerSkill->act = false;
+			effectRemove(1);
+			Enemy->act = true;
+		}
+	}
+
+
+	if (Enemy->hp <= 0)
+	{
+		Enemy->act = false;
 		returnVillage();
-		Enemy->hp = Enemy->maxHp;
 		levelcnt++;
-		player->maxHp += 1;
-		player->maxMp += 1;
 		if (levelcnt == 3)
 		{
+			player->maxHp += 1;
+			player->maxMp += 1;
 			player->hp = player->maxHp;
 			player->mp = player->maxMp;
 			levelcnt = 0;
+			Enemy->maxHp += player->level * 3;
+			Enemy->atk += player->level;
 		}
+		Enemy->hp = Enemy->maxHp;
 	}
 
 
 	if (Enemy->act == true)
 	{
-		Attack3();
+		enemySkill->act = true;
 		Enemy->act = false;
-		player->act = true;
 	}
 
-	//if (player->hp == 0)
-	//{
-	//	exit(0);
-	//	printf("GAME OVER");
-	//}
+	if (enemySkill->act == true)
+	{
+		WriteBuffer(enemySkill->x, enemySkill->y, enemySkill->shape, enemySkill->color);
+		enemySkill->x--;
+		if (enemySkill->x == player->x)
+		{
+			Attack(3);
+			enemySkill->act = false;
+			effectRemove(2);
+			player->act = true;
+		}
+	}
+
+
+	if (player->hp <= 0)
+	{
+		sceneID = END;
+		exitCheck = 2;
+	}
 
 	//WriteBuffer(playerSkill->x, playerSkill->y, playerSkill->shape, playerSkill->color);
 	//WriteBuffer(enemySkill->x, enemySkill->y, enemySkill->shape, enemySkill->color);
@@ -968,7 +1055,7 @@ void Status()
 	WriteBuffer(player->x + 4, player->y + 7, sNum, WHITE);
 	WriteBuffer(player->x - 1, player->y + 9, "기술", WHITE);
 	WriteBuffer(player->x - 1, player->y + 10, normal->Text, WHITE);
-	WriteBuffer(player->x - 1,  player->y + 11, playerSkill->Text , WHITE);
+	WriteBuffer(player->x - 1, player->y + 11, playerSkill->Text, WHITE);
 
 	if (GetAsyncKeyState(VK_RETURN))
 	{
@@ -980,22 +1067,92 @@ void Status()
 
 }
 
-void Attack1()
+void End(int num)
 {
-	Enemy->hp -= player->atk;
-}
-void Attack2()
-{
-	if(player->playerType == WIZARD) Enemy->hp -= player->atk * 5;
-	else Enemy->hp -= player->atk * 2;
-	
-	player->mp -= 5;
-}
-void Attack3()
-{
-	player->hp -= Enemy->atk;
+	if (num == 1)
+	{
+		WriteBuffer(15, 20, "게임을 종료합니다", WHITE);
+	}
+
+	if (num == 2)
+	{
+		WriteBuffer(14, 20, "플레이어가 사망하였습니다", RED);
+	}
+	WriteBuffer(16, 30, "ESC로 게임 종료", WHITE);
+
+	if (GetAsyncKeyState(VK_ESCAPE))
+	{
+		exit(0);
+	}
 }
 
+void Attack(int num)
+{
+
+	if (num < 3 && player->playerType == ARCHER)
+	{
+		srand(time(NULL));
+		int dice = rand() % 6 + 1;
+		if (dice > 3)
+		{
+			WriteBuffer(15, 5, "CRITICAL!", YELLOW);
+			player->critical = true;
+		}
+
+	}
+
+	if (num == 1)
+	{
+
+		if (player->critical == true)
+		{
+			Enemy->hp -= player->atk * 2;
+			player->critical = false;
+		}
+		else Enemy->hp -= player->atk;
+
+
+	}
+
+	if (num == 2)
+	{
+		if (player->critical == true)
+		{
+			Enemy->hp -= player->atk * 4;
+			player->critical = false;
+		}
+
+		if (player->playerType == WIZARD) Enemy->hp -= player->atk * 5;
+		else Enemy->hp -= player->atk * 2;
+
+		player->mp -= 5;
+	}
+
+
+	if (num == 3)
+	{
+		player->hp -= Enemy->atk;
+	}
+
+
+
+}
+
+void effectRemove(int num)
+{
+	if (num == 1)
+	{
+		playerSkill->x = player->x + 4;
+		playerSkill->y = player->y + 1;
+	}
+
+	if (num == 2)
+	{
+		enemySkill->x = Enemy->x - 2;
+		enemySkill->y = Enemy->y + 1;
+	}
+
+}
 
 void returnVillage()
 {
