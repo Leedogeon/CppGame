@@ -178,7 +178,10 @@ struct Text
 	const char* Description[3];
 	COLOR color;
 };
-
+struct Box
+{
+	const char* boxShape[3];
+};
 #pragma region Player
 
 struct Player
@@ -235,11 +238,6 @@ Skill* playerSkill = nullptr;
 Skill* enemySkill = nullptr;
 
 #pragma endregion
-
-struct Box
-{
-	const char* boxShape[3];
-};
 Box* box;
 #pragma region Village
 struct VillageChoose
@@ -256,8 +254,6 @@ VillageChoose* VgBED;
 VillageChoose* VgSTATUS;
 VillageChoose* VgEXIT;
 #pragma endregion
-
-
 #pragma region  function
 void HideCursor();
 void Init();
@@ -279,7 +275,6 @@ void Attack(int num);
 void End(int num);
 void effectRemove(int num);
 #pragma endregion
-
 int gameSpeed = 50;
 int exitCheck = 0;
 int main()
@@ -318,33 +313,10 @@ int main()
 	}
 	ReleaseBuffer();
 }
-
+#pragma region Init
 void Init()
 {
-	selectShape = (Obj*)malloc(sizeof(Obj));
-	selectShape->x = 17;
-	selectShape->y = 19;
-	selectShape->shape = "☞";
-	selectShape->color = WHITE;
-
-	startText = (Obj*)malloc(sizeof(Obj));
-	startText->x = 19;
-	startText->y = 19;
-	startText->shape = "START";
-	startText->color = WHITE;
-
-	optionText = (Obj*)malloc(sizeof(Obj));
-	optionText->x = 19;
-	optionText->y = 21;
-	optionText->shape = "OPTION";
-	optionText->color = WHITE;
-
-	exitText = (Obj*)malloc(sizeof(Obj));
-	exitText->x = 19;
-	exitText->y = 23;
-	exitText->shape = "EXIT";
-	exitText->color = WHITE;
-
+#pragma region character
 	player = (Player*)malloc(sizeof(Player));
 	player->shape[0] = "  o  ";
 	player->shape[1] = " /|\\  ";
@@ -353,6 +325,9 @@ void Init()
 	playerWeapon->x = player->x + 2;
 	playerWeapon->y = player->y - 2;
 
+	normal = (Skill*)malloc(sizeof(Skill));
+	normal->Text = "기본공격";
+#pragma region warrior
 	warrior = (Player*)malloc(sizeof(Player));
 	warrior->text.Description[0] = "전사";
 	warrior->text.Description[1] = "높은 기본능력치";
@@ -375,7 +350,12 @@ void Init()
 	warriorWeapon->shape[1] = " /  /";
 	warriorWeapon->shape[2] = " ▨/";
 	warriorWeapon->shape[3] = "/";
-
+	warriorSkill = (Skill*)malloc(sizeof(Skill));
+	warriorSkill->Text = "강타";
+	warriorSkill->shape = "";
+	warriorSkill->color = WHITE;
+#pragma endregion
+#pragma region wizard
 	wizard = (Player*)malloc(sizeof(Player));
 	wizard->text.Description[0] = "마법사";
 	wizard->text.Description[1] = "높은 공격력, 낮은 체력";
@@ -399,6 +379,12 @@ void Init()
 	wizardWeapon->shape[2] = " /";
 	wizardWeapon->shape[3] = "/";
 
+	wizardSkill = (Skill*)malloc(sizeof(Skill));
+	wizardSkill->Text = "에너지볼";
+	wizardSkill->shape = "＠";
+	wizardSkill->color = LIGHTBLUE;
+#pragma endregion
+#pragma region archer
 	archer = (Player*)malloc(sizeof(Player));
 	archer->text.Description[0] = "궁수";
 	archer->text.Description[1] = "평범한 능력치, 확률성 치명타";
@@ -422,26 +408,12 @@ void Init()
 	archerWeapon->shape[2] = "││";
 	archerWeapon->shape[3] = "│/";
 
-	normal = (Skill*)malloc(sizeof(Skill));
-	normal->Text = "기본공격";
-
-	warriorSkill = (Skill*)malloc(sizeof(Skill));
-	warriorSkill->Text = "강타";
-	warriorSkill->shape = "";
-	warriorSkill->color = WHITE;
-
-
-	wizardSkill = (Skill*)malloc(sizeof(Skill));
-	wizardSkill->Text = "에너지볼";
-	wizardSkill->shape = "＠";
-	wizardSkill->color = LIGHTBLUE;
-
 	archerSkill = (Skill*)malloc(sizeof(Skill));
 	archerSkill->Text = "더블샷";
 	archerSkill->shape = ">=>";
 	archerSkill->color = YELLOW;
-
-
+#pragma endregion
+#pragma region enemy
 	Enemy = (Player*)malloc(sizeof(Player));
 	Enemy->hp = 30;
 	Enemy->mp = 10;
@@ -457,6 +429,33 @@ void Init()
 	enemySkill->y = Enemy->y + 1;
 	enemySkill->shape = "※";
 	enemySkill->color = RED;
+#pragma endregion
+#pragma endregion
+
+#pragma region object
+	selectShape = (Obj*)malloc(sizeof(Obj));
+	selectShape->x = 17;
+	selectShape->y = 19;
+	selectShape->shape = "☞";
+	selectShape->color = WHITE;
+
+	startText = (Obj*)malloc(sizeof(Obj));
+	startText->x = 19;
+	startText->y = 19;
+	startText->shape = "START";
+	startText->color = WHITE;
+
+	optionText = (Obj*)malloc(sizeof(Obj));
+	optionText->x = 19;
+	optionText->y = 21;
+	optionText->shape = "OPTION";
+	optionText->color = WHITE;
+
+	exitText = (Obj*)malloc(sizeof(Obj));
+	exitText->x = 19;
+	exitText->y = 23;
+	exitText->shape = "EXIT";
+	exitText->color = WHITE;
 
 
 	box = (Box*)malloc(sizeof(Box));
@@ -500,9 +499,29 @@ void Init()
 	VgEXIT->x = 32;
 	VgEXIT->y = 26;
 	VgEXIT->color = WHITE;
-
-
+#pragma endregion
+	
 }
+void InitRelease()
+{
+	if (player->playerType == WARRIOR)
+	{
+		releaseArcher();
+		releaseWizard();
+	}
+	if (player->playerType == WIZARD)
+	{
+		releaseArcher();
+		releaseWarrior();
+
+	}
+	if (player->playerType == ARCHER)
+	{
+		releaseWizard();
+		releaseWarrior();
+	}
+}
+#pragma endregion
 void MainScreen()
 {
 	for (int y = 0; y < MapSize; y++)
@@ -724,25 +743,6 @@ void Choose()
 		returnVillage();
 		InitRelease();
 
-	}
-}
-void InitRelease()
-{
-	if (player->playerType == WARRIOR)
-	{
-		releaseArcher();
-		releaseWizard();
-	}
-	if (player->playerType == WIZARD)
-	{
-		releaseArcher();
-		releaseWarrior();
-
-	}
-	if (player->playerType == ARCHER)
-	{
-		releaseWizard();
-		releaseWarrior();
 	}
 }
 #pragma region release
@@ -1067,65 +1067,6 @@ void Battle()
 	}
 
 }
-void Status()
-{
-	for (int y = 0; y < MapSize; y++)
-	{
-		for (int x = 0; x < MapSize; x++)
-		{
-			switch (map[y][x])
-			{
-			case 1:
-				WriteBuffer(x, y, "■", YELLOW);
-				break;
-
-			default:
-				break;
-			}
-		}
-	}
-
-	PlayerView();
-	WriteBuffer(player->x - 1, player->y + 9, "기술", WHITE);
-	WriteBuffer(player->x - 1, player->y + 10, normal->Text, WHITE);
-	WriteBuffer(player->x - 1, player->y + 11, playerSkill->Text, WHITE);
-
-	if (GetAsyncKeyState(VK_RETURN))
-	{
-		sceneID = MAIN;
-	}
-
-
-	WriteBuffer(15, 35, "ENTER키로 돌아가기", WHITE);
-
-}
-void eStatus()
-{
-	for (int y = 0; y < MapSize; y++)
-	{
-		for (int x = 0; x < MapSize; x++)
-		{
-			switch (map[y][x])
-			{
-			case 1:
-				WriteBuffer(x, y, "■", YELLOW);
-				break;
-
-			default:
-				break;
-			}
-		}
-	}
-
-	EnemyView();
-	if (GetAsyncKeyState(VK_RETURN))
-	{
-		sceneID = MAIN;
-	}
-
-
-	WriteBuffer(15, 35, "ENTER키로 돌아가기", WHITE);
-}
 void End(int num)
 {
 	if (num == 1)
@@ -1216,6 +1157,67 @@ void returnVillage()
 	selectShape->y = 6;
 	sceneID = MAIN;
 }
+#pragma region  stat&view
+void Status()
+{
+	for (int y = 0; y < MapSize; y++)
+	{
+		for (int x = 0; x < MapSize; x++)
+		{
+			switch (map[y][x])
+			{
+			case 1:
+				WriteBuffer(x, y, "■", YELLOW);
+				break;
+
+			default:
+				break;
+			}
+		}
+	}
+
+	PlayerView();
+	WriteBuffer(player->x - 1, player->y + 9, "기술", WHITE);
+	WriteBuffer(player->x - 1, player->y + 10, normal->Text, WHITE);
+	WriteBuffer(player->x - 1, player->y + 11, playerSkill->Text, WHITE);
+
+	if (GetAsyncKeyState(VK_RETURN))
+	{
+		sceneID = MAIN;
+	}
+
+
+	WriteBuffer(15, 35, "ENTER키로 돌아가기", WHITE);
+
+}
+void eStatus()
+{
+	for (int y = 0; y < MapSize; y++)
+	{
+		for (int x = 0; x < MapSize; x++)
+		{
+			switch (map[y][x])
+			{
+			case 1:
+				WriteBuffer(x, y, "■", YELLOW);
+				break;
+
+			default:
+				break;
+			}
+		}
+	}
+
+	EnemyView();
+	if (GetAsyncKeyState(VK_RETURN))
+	{
+		sceneID = MAIN;
+	}
+
+
+	WriteBuffer(15, 35, "ENTER키로 돌아가기", WHITE);
+}
+
 void PlayerView()
 {
 	for (int i = 0; i < 3; i++)
@@ -1258,6 +1260,7 @@ void EnemyView()
 	WriteBuffer(Enemy->x - 3, Enemy->y + 6, "공격력 : ", WHITE);
 	WriteBuffer(Enemy->x + 2, Enemy->y + 6, sNum, WHITE);
 }
+#pragma endregion
 #pragma region Buffer
 void InitBuffer()
 {
