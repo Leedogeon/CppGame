@@ -1117,7 +1117,7 @@ void Attack(int num)
 	{
 		if (player->critical == true)
 		{
-			Enemy->hp -= player->atk * 4;
+			Enemy->hp -= player->atk * 2;
 			player->critical = false;
 		}
 
