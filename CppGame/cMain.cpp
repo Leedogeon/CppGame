@@ -194,7 +194,7 @@ struct Player
 	int x;
 	int y;
 	int atk;
-	const char* shape[3][3];
+	const char* shape[3];
 	COLOR color;
 	int hp;
 	int mp;
@@ -349,9 +349,9 @@ void Init()
 	exitText->color = WHITE;
 
 	player = (Player*)malloc(sizeof(Player));
-	player->shape[0][0] = "  o  ";
-	player->shape[0][1] = " /|\\  ";
-	player->shape[0][2] = " / \\ ";
+	player->shape[0] = "  o  ";
+	player->shape[1] = " /|\\  ";
+	player->shape[2] = " / \\ ";
 	playerWeapon = (Weapon*)malloc(sizeof(Weapon));
 	playerWeapon->x = player->x + 2;
 	playerWeapon->y = player->y - 2;
@@ -368,9 +368,9 @@ void Init()
 	warrior->x = 15;
 	warrior->y = 7;
 	warrior->atk = 10;
-	warrior->shape[0][0] = player->shape[0][0];
-	warrior->shape[0][1] = player->shape[0][1];
-	warrior->shape[0][2] = player->shape[0][2];
+	warrior->shape[0] = player->shape[0];
+	warrior->shape[1] = player->shape[1];
+	warrior->shape[2] = player->shape[2];
 	warriorWeapon = (Weapon*)malloc(sizeof(Weapon));
 	warriorWeapon->x = warrior->x + 2;
 	warriorWeapon->y = warrior->y - 2;
@@ -391,9 +391,9 @@ void Init()
 	wizard->atk = 3;
 	wizard->x = 15;
 	wizard->y = 20;
-	wizard->shape[0][0] = player->shape[0][0];
-	wizard->shape[0][1] = player->shape[0][1];
-	wizard->shape[0][2] = player->shape[0][2];
+	wizard->shape[0] = player->shape[0];
+	wizard->shape[1] = player->shape[1];
+	wizard->shape[2] = player->shape[2];
 	wizardWeapon = (Weapon*)malloc(sizeof(Weapon));
 	wizardWeapon->x = wizard->x + 2;
 	wizardWeapon->y = wizard->y - 2;
@@ -414,9 +414,9 @@ void Init()
 	archer->atk = 7;
 	archer->x = 15;
 	archer->y = 33;
-	archer->shape[0][0] = player->shape[0][0];
-	archer->shape[0][1] = player->shape[0][1];
-	archer->shape[0][2] = player->shape[0][2];
+	archer->shape[0] = player->shape[0];
+	archer->shape[1] = player->shape[1];
+	archer->shape[2] = player->shape[2];
 	archerWeapon = (Weapon*)malloc(sizeof(Weapon));
 	archerWeapon->x = archer->x + 2;
 	archerWeapon->y = archer->y - 1;
@@ -452,9 +452,9 @@ void Init()
 	Enemy->y = 10;
 	Enemy->maxHp = 30;
 	Enemy->atk = 5;
-	Enemy->shape[0][0] = "┌───┐";
-	Enemy->shape[0][1] = "│ ┼ │";
-	Enemy->shape[0][2] = "└───┘";
+	Enemy->shape[0] = "┌───┐";
+	Enemy->shape[1] = "│ ┼ │";
+	Enemy->shape[2] = "└───┘";
 	enemySkill = (Skill*)malloc(sizeof(Skill));
 	enemySkill->x = Enemy->x - 2;
 	enemySkill->y = Enemy->y + 1;
@@ -648,7 +648,7 @@ void Choose()
 
 	for (int i = 0; i < 3; i++)
 	{
-		WriteBuffer(warrior->x, warrior->y + i, warrior->shape[0][i], WHITE);
+		WriteBuffer(warrior->x, warrior->y + i, warrior->shape[i], WHITE);
 	}
 	for (int i = 0; i < 4; i++)
 	{
@@ -657,7 +657,7 @@ void Choose()
 
 	for (int i = 0; i < 3; i++)
 	{
-		WriteBuffer(wizard->x, wizard->y + i, wizard->shape[0][i], WHITE);
+		WriteBuffer(wizard->x, wizard->y + i, wizard->shape[i], WHITE);
 	}
 	for (int i = 0; i < 4; i++)
 	{
@@ -666,7 +666,7 @@ void Choose()
 
 	for (int i = 0; i < 3; i++)
 	{
-		WriteBuffer(archer->x, archer->y + i, archer->shape[0][i], WHITE);
+		WriteBuffer(archer->x, archer->y + i, archer->shape[i], WHITE);
 	}
 	for (int i = 0; i < 4; i++)
 	{
@@ -1196,7 +1196,7 @@ void PlayerView()
 {
 	for (int i = 0; i < 3; i++)
 	{
-		WriteBuffer(player->x, player->y + i, player->shape[0][i], WHITE);
+		WriteBuffer(player->x, player->y + i, player->shape[i], WHITE);
 	}
 	for (int i = 0; i < 4; i++)
 	{
@@ -1223,7 +1223,7 @@ void EnemyView()
 {
 	for (int i = 0; i < 3; i++)
 	{
-		WriteBuffer(Enemy->x, Enemy->y + i, Enemy->shape[0][i], WHITE);
+		WriteBuffer(Enemy->x, Enemy->y + i, Enemy->shape[i], WHITE);
 	}
 
 	for (int j = 0; j < 2; j++)
