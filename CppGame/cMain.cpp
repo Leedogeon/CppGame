@@ -95,7 +95,6 @@ int ChooseMap[MapSize][MapSize] =
 };
 
 #pragma endregion
-
 #pragma region Buffer
 #define BufferWidth 80	  //가로 버퍼 크기
 #define BufferHeight 40	  //세로 버퍼 크기
@@ -107,8 +106,6 @@ void ClearBuffer();
 void WriteBuffer(int x, int y, const char* shape, int color);
 void ReleaseBuffer();
 #pragma endregion
-
-
 #pragma region Enum
 enum COLOR
 {
@@ -140,6 +137,7 @@ enum SceneID
 	BATTLE,
 	OPTION,
 	STATUS,
+	ENEMYSTATUS,
 	END,
 };
 
@@ -158,8 +156,6 @@ enum Prev
 };
 
 #pragma endregion
-
-
 #pragma region startPage
 struct Obj
 {
@@ -175,7 +171,6 @@ Obj* optionText = nullptr;
 Obj* exitText = nullptr;
 
 #pragma endregion
-
 SceneID sceneID;
 Prev prev;
 struct Text
@@ -246,6 +241,7 @@ struct Box
 	const char* boxShape[3];
 };
 Box* box;
+#pragma region Village
 struct VillageChoose
 {
 	const char* name;
@@ -254,11 +250,12 @@ struct VillageChoose
 	COLOR color;
 };
 VillageChoose* VgBATTLE;
-VillageChoose* VgBAG;
+VillageChoose* VgESTATUS;
 VillageChoose* VgOPTION;
 VillageChoose* VgBED;
 VillageChoose* VgSTATUS;
 VillageChoose* VgEXIT;
+#pragma endregion
 
 
 #pragma region  function
@@ -273,6 +270,7 @@ void Option();
 void Choose();
 void Village();
 void Status();
+void eStatus();
 void Battle();
 void returnVillage();
 void PlayerView();
@@ -287,7 +285,6 @@ int exitCheck = 0;
 int main()
 {
 	sceneID = LOGO;
-	HideCursor();
 	InitBuffer();
 	Init();
 
@@ -310,15 +307,15 @@ int main()
 			break;
 		case END: End(exitCheck);
 			break;
+		case ENEMYSTATUS: eStatus();
+			break;
 		default:
 			break;
 		}
 		FlipBuffer();
 		ClearBuffer();
-
 		Sleep(gameSpeed);
 	}
-
 	ReleaseBuffer();
 }
 
@@ -474,11 +471,11 @@ void Init()
 	VgBATTLE->y = 6;
 	VgBATTLE->color = WHITE;
 
-	VgBAG = (VillageChoose*)malloc(sizeof(VillageChoose));
-	VgBAG->name = "가방";
-	VgBAG->x = 22;
-	VgBAG->y = 16;
-	VgBAG->color = WHITE;
+	VgESTATUS = (VillageChoose*)malloc(sizeof(VillageChoose));
+	VgESTATUS->name = "적정보";
+	VgESTATUS->x = 22;
+	VgESTATUS->y = 16;
+	VgESTATUS->color = WHITE;
 
 	VgOPTION = (VillageChoose*)malloc(sizeof(VillageChoose));
 	VgOPTION->name = "옵션";
@@ -836,7 +833,7 @@ void Village()
 	}
 
 	WriteBuffer(VgBATTLE->x, VgBATTLE->y, VgBATTLE->name, VgBATTLE->color);
-	WriteBuffer(VgBAG->x, VgBAG->y, VgBAG->name, VgBAG->color);
+	WriteBuffer(VgESTATUS->x, VgESTATUS->y, VgESTATUS->name, VgESTATUS->color);
 	WriteBuffer(VgOPTION->x, VgOPTION->y, VgOPTION->name, VgOPTION->color);
 	WriteBuffer(VgBED->x, VgBED->y, VgBED->name, VgBED->color);
 	WriteBuffer(VgSTATUS->x, VgSTATUS->y, VgSTATUS->name, VgSTATUS->color);
@@ -871,9 +868,9 @@ void Village()
 			player->act = true;
 			Enemy->act = false;
 		}
-		if (VgBAG->y == selectShape->y && selectShape->x < 20)
+		if (VgESTATUS->y == selectShape->y && selectShape->x < 20)
 		{
-
+			sceneID = ENEMYSTATUS;
 		}
 		if (VgOPTION->y == selectShape->y && selectShape->x < 20)
 		{
@@ -904,11 +901,11 @@ void Village()
 		VgBATTLE->color = RED;
 	}
 	else VgBATTLE->color = WHITE;
-	if (VgBAG->y == selectShape->y && selectShape->x < 20)
+	if (VgESTATUS->y == selectShape->y && selectShape->x < 20)
 	{
-		VgBAG->color = RED;
+		VgESTATUS->color = RED;
 	}
-	else VgBAG->color = WHITE;
+	else VgESTATUS->color = WHITE;
 	if (VgOPTION->y == selectShape->y && selectShape->x < 20)
 	{
 		VgOPTION->color = RED;
@@ -934,7 +931,6 @@ void Village()
 
 }
 int levelcnt = 0;
-int battleSpeed = 0;
 void Battle()
 {
 	for (int y = 0; y < MapSize; y++)
@@ -950,6 +946,15 @@ void Battle()
 			default:
 				break;
 			}
+		}
+	}
+
+
+	for (int j = 0; j < 2; j++)
+	{
+		for (int i = 0; i < 3; i++)
+		{
+			WriteBuffer(5 + j * 10, 30 + i, box->boxShape[i], WHITE);
 		}
 	}
 
@@ -1061,11 +1066,7 @@ void Battle()
 		exitCheck = 2;
 	}
 
-	//WriteBuffer(playerSkill->x, playerSkill->y, playerSkill->shape, playerSkill->color);
-	//WriteBuffer(enemySkill->x, enemySkill->y, enemySkill->shape, enemySkill->color);
-
 }
-
 void Status()
 {
 	for (int y = 0; y < MapSize; y++)
@@ -1098,12 +1099,38 @@ void Status()
 	WriteBuffer(15, 35, "ENTER키로 돌아가기", WHITE);
 
 }
+void eStatus()
+{
+	for (int y = 0; y < MapSize; y++)
+	{
+		for (int x = 0; x < MapSize; x++)
+		{
+			switch (map[y][x])
+			{
+			case 1:
+				WriteBuffer(x, y, "■", YELLOW);
+				break;
 
+			default:
+				break;
+			}
+		}
+	}
+
+	EnemyView();
+	if (GetAsyncKeyState(VK_RETURN))
+	{
+		sceneID = MAIN;
+	}
+
+
+	WriteBuffer(15, 35, "ENTER키로 돌아가기", WHITE);
+}
 void End(int num)
 {
 	if (num == 1)
 	{
-		WriteBuffer(15, 20, "게임을 종료합니다", WHITE);
+		WriteBuffer(16, 20, "게임을 종료합니다", WHITE);
 	}
 
 	if (num == 2)
@@ -1117,7 +1144,6 @@ void End(int num)
 		exit(0);
 	}
 }
-
 void Attack(int num)
 {
 
@@ -1169,7 +1195,6 @@ void Attack(int num)
 
 
 }
-
 void effectRemove(int num)
 {
 	if (num == 1)
@@ -1185,7 +1210,6 @@ void effectRemove(int num)
 	}
 
 }
-
 void returnVillage()
 {
 	selectShape->x = 18;
@@ -1218,20 +1242,11 @@ void PlayerView()
 	WriteBuffer(player->x - 3, player->y + 7, "공격력 : ", WHITE);
 	WriteBuffer(player->x + 2, player->y + 7, sNum, WHITE);
 }
-
 void EnemyView()
 {
 	for (int i = 0; i < 3; i++)
 	{
 		WriteBuffer(Enemy->x, Enemy->y + i, Enemy->shape[i], WHITE);
-	}
-
-	for (int j = 0; j < 2; j++)
-	{
-		for (int i = 0; i < 3; i++)
-		{
-			WriteBuffer(5 + j * 10, 30 + i, box->boxShape[i], WHITE);
-		}
 	}
 
 	char sNum[5];
@@ -1243,7 +1258,6 @@ void EnemyView()
 	WriteBuffer(Enemy->x - 3, Enemy->y + 6, "공격력 : ", WHITE);
 	WriteBuffer(Enemy->x + 2, Enemy->y + 6, sNum, WHITE);
 }
-
 #pragma region Buffer
 void InitBuffer()
 {
@@ -1312,21 +1326,4 @@ void ReleaseBuffer()
 	CloseHandle(hBuffer[0]);
 	CloseHandle(hBuffer[1]);
 }
-#pragma endregion
-
-#pragma region WIN_API
-
-
-void HideCursor()
-{
-
-	CONSOLE_CURSOR_INFO info;
-	info.dwSize = 1;
-	info.bVisible = false;
-
-	SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &info);
-
-}
-
-
 #pragma endregion
