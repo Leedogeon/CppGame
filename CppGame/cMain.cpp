@@ -265,6 +265,9 @@ VillageChoose* VgEXIT;
 void HideCursor();
 void Init();
 void InitRelease();
+void releaseWizard();
+void releaseWarrior();
+void releaseArcher();
 void MainScreen();
 void Option();
 void Choose();
@@ -463,7 +466,6 @@ void Init()
 	box->boxShape[0] = "┌──────────┐";
 	box->boxShape[1] = "│          │";
 	box->boxShape[2] = "└──────────┘";
-
 
 
 	VgBATTLE = (VillageChoose*)malloc(sizeof(VillageChoose));
@@ -731,45 +733,80 @@ void InitRelease()
 {
 	if (player->playerType == WARRIOR)
 	{
-		if (wizard != nullptr)
-		{
-			free(wizard);
-			wizard = nullptr;
-		}
-		if (archer != nullptr)
-		{
-			free(archer);
-			archer = nullptr;
-		}
+		releaseArcher();
+		releaseWizard();
 	}
 	if (player->playerType == WIZARD)
 	{
-		if (warrior != nullptr)
-		{
-			free(warrior);
-			warrior = nullptr;
-		}
-		if (archer != nullptr)
-		{
-			free(archer);
-			archer = nullptr;
-		}
+		releaseArcher();
+		releaseWarrior();
+
 	}
 	if (player->playerType == ARCHER)
 	{
-		if (wizard != nullptr)
-		{
-			free(wizard);
-			wizard = nullptr;
-		}
-		if (warrior != nullptr)
-		{
-			free(warrior);
-			warrior = nullptr;
-		}
+		releaseWizard();
+		releaseWarrior();
 	}
-
 }
+#pragma region release
+void releaseWarrior()
+{
+	if (warrior != nullptr)
+	{
+		free(warrior);
+		warrior = nullptr;
+	}
+	if (warriorWeapon != nullptr)
+	{
+		free(warriorWeapon);
+		warriorWeapon = nullptr;
+	}
+	if (warriorSkill != nullptr)
+	{
+		free(warriorSkill);
+		warriorSkill = nullptr;
+	}
+}
+void releaseWizard()
+{
+	if (wizard != nullptr)
+	{
+		free(wizard);
+		wizard = nullptr;
+	}
+	if (wizardWeapon != nullptr)
+	{
+		free(wizardWeapon);
+		wizardWeapon = nullptr;
+	}
+	if (wizardSkill != nullptr)
+	{
+		free(wizardSkill);
+		wizardSkill = nullptr;
+	}
+}
+void releaseArcher()
+{
+	if (archer != nullptr)
+	{
+		free(archer);
+		archer = nullptr;
+	}
+	if (archerWeapon != nullptr)
+	{
+		free(archerWeapon);
+		archerWeapon = nullptr;
+	}
+	if (archerSkill != nullptr)
+	{
+		free(archerSkill);
+		archerSkill = nullptr;
+	}
+}
+#pragma endregion
+
+
+
 void Village()
 {
 	for (int y = 0; y < MapSize; y++)
