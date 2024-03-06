@@ -804,9 +804,6 @@ void releaseArcher()
 	}
 }
 #pragma endregion
-
-
-
 void Village()
 {
 	for (int y = 0; y < MapSize; y++)
@@ -1027,9 +1024,12 @@ void Battle()
 			player->maxMp += 1;
 			player->hp = player->maxHp;
 			player->mp = player->maxMp;
+			player->level++;
 			levelcnt = 0;
-			Enemy->maxHp += player->level * 3;
-			Enemy->atk += player->level;
+			Enemy->maxHp += 3;
+			Enemy->atk += 1;
+			if (player->level % 2 == 0) player->atk++;
+
 		}
 		Enemy->hp = Enemy->maxHp;
 	}
@@ -1085,11 +1085,6 @@ void Status()
 	}
 
 	PlayerView();
-
-	char sNum[5];
-	_itoa_s(player->atk, sNum, 10);
-	WriteBuffer(player->x - 1, player->y + 7, "공격력 : ", WHITE);
-	WriteBuffer(player->x + 4, player->y + 7, sNum, WHITE);
 	WriteBuffer(player->x - 1, player->y + 9, "기술", WHITE);
 	WriteBuffer(player->x - 1, player->y + 10, normal->Text, WHITE);
 	WriteBuffer(player->x - 1, player->y + 11, playerSkill->Text, WHITE);
@@ -1210,12 +1205,18 @@ void PlayerView()
 
 	char sNum[5];
 
+	WriteBuffer(player->x - 1, player->y - 5, "Level : ", WHITE);
+	_itoa_s(player->level, sNum, 10);
+	WriteBuffer(player->x + 3, player->y - 5, sNum, WHITE);
 	_itoa_s(player->hp, sNum, 10);
 	WriteBuffer(player->x - 1, player->y + 5, "HP : ", WHITE);
 	WriteBuffer(player->x + 2, player->y + 5, sNum, WHITE);
 	_itoa_s(player->mp, sNum, 10);
 	WriteBuffer(player->x - 1, player->y + 6, "MP : ", WHITE);
 	WriteBuffer(player->x + 2, player->y + 6, sNum, WHITE);
+	_itoa_s(player->atk, sNum, 10);
+	WriteBuffer(player->x - 3, player->y + 7, "공격력 : ", WHITE);
+	WriteBuffer(player->x + 2, player->y + 7, sNum, WHITE);
 }
 
 void EnemyView()
@@ -1238,8 +1239,8 @@ void EnemyView()
 	_itoa_s(Enemy->hp, sNum, 10);
 	WriteBuffer(Enemy->x - 1, Enemy->y + 5, "HP : ", WHITE);
 	WriteBuffer(Enemy->x + 2, Enemy->y + 5, sNum, WHITE);
-	_itoa_s(Enemy->mp, sNum, 10);
-	WriteBuffer(Enemy->x - 1, Enemy->y + 6, "MP : ", WHITE);
+	_itoa_s(Enemy->atk, sNum, 10);
+	WriteBuffer(Enemy->x - 3, Enemy->y + 6, "공격력 : ", WHITE);
 	WriteBuffer(Enemy->x + 2, Enemy->y + 6, sNum, WHITE);
 }
 
