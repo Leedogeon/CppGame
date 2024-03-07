@@ -485,7 +485,7 @@ void Init()
 	VgBED = (VillageChoose*)malloc(sizeof(VillageChoose));
 	VgBED->name = "휴식";
 	VgBED->x = 32;
-	VgBED->y = 6;
+	VgBED->y = 6;	
 	VgBED->color = WHITE;
 
 	VgSTATUS = (VillageChoose*)malloc(sizeof(VillageChoose));
@@ -743,6 +743,7 @@ void Choose()
 		returnVillage();
 		InitRelease();
 
+		sceneID = MAIN;
 	}
 }
 #pragma region release
